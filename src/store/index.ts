@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
-    layout: JSON.parse(sessionStorage.getItem('layout') || '[]') as layoutChildItem[],
+    layout: [] as layoutChildItem[],
     gridConfig: {
       colNum: 24,
       rowHeight: 30,
@@ -18,11 +18,9 @@ export const useDesignerStore = defineStore('designer', {
       }
       return selectedWidget.config || {}
     },
-    gridLayout: (state) => {
-      return {
-        layout: state.layout,
-        gridConfig: state.gridConfig,
-      }
+    getGridLayout: (state) => {
+      const layout = JSON.parse(sessionStorage.getItem('layout') || '[]') || state.layout
+      return layout
     },
   },
   actions: {
@@ -44,7 +42,10 @@ export const useDesignerStore = defineStore('designer', {
     },
     updateLayout(newLayout: layoutChildItem[]) {
       this.layout = newLayout
-      sessionStorage.setItem('layout', JSON.stringify(newLayout))
+    },
+    saveLayout(newLayout: layoutChildItem[]) {
+      this.layout = newLayout
+      sessionStorage.setItem('layout', JSON.stringify(this.layout))
     },
   },
 })

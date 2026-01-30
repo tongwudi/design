@@ -8,18 +8,18 @@ const componentList = [
   {
     name: '基础',
     children: [
-      { name: '图片', w: 6, h: 8, minW: 2, minH: 2 },
-      { name: '倒计时', w: 6, h: 8, minW: 2, minH: 2 },
-      { name: '统计数值', w: 6, h: 8, minW: 2, minH: 2 },
-      { name: '表格', w: 6, h: 8, minW: 2, minH: 2 },
+      { name: '图片', w: 4, h: 6, minW: 2, minH: 4 },
+      { name: '倒计时', w: 4, h: 6, minW: 2, minH: 4 },
+      { name: '统计数值', w: 4, h: 6, minW: 2, minH: 4 },
+      { name: '表格', w: 4, h: 6, minW: 2, minH: 4 },
     ],
   },
   {
     name: '图表',
     children: [
-      { name: '柱状图', compType: 'BarChart', w: 8, h: 12, minW: 4, minH: 8 },
-      { name: '饼状图', compType: 'PieChart', w: 8, h: 12, minW: 4, minH: 8 },
-      { name: '折线图', compType: 'LineChart', w: 8, h: 12, minW: 4, minH: 8 },
+      { name: '柱状图', compType: 'BarChart', w: 8, h: 10, minW: 4, minH: 6 },
+      { name: '饼状图', compType: 'PieChart', w: 8, h: 10, minW: 4, minH: 6 },
+      { name: '折线图', compType: 'LineChart', w: 8, h: 10, minW: 4, minH: 6 },
     ],
   },
 ]

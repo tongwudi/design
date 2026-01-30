@@ -25,6 +25,8 @@ const contentStyle: CSSProperties = {
   backgroundColor: '#eee',
 }
 
+const router = useRouter()
+
 const designerStore = useDesignerStore()
 
 const layout = computed({
@@ -46,12 +48,24 @@ const {
 } = useGridLayout(layout, gridConfig)
 
 function clearAll() {
-  designerStore.clearAllWidgets()
+  Modal.confirm({
+    title: '操作提示',
+    type: 'warning',
+    content: '确定清空所有组件吗?',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      designerStore.clearAllWidgets()
+    },
+  })
 }
 
-function preview(callback: () => void) {
-  designerStore.updateLayout(layout.value)
-  callback()
+function preview() {
+  designerStore.saveLayout(layout.value)
+  const { href } = router.resolve({
+    path: '/preview',
+  })
+  window.open(href, '_blank')
 }
 
 function selectWidget(id: string) {

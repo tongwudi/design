@@ -1,33 +1,16 @@
 <script  lang="ts" setup>
-import { Modal } from 'ant-design-vue'
-
 const emit = defineEmits<{
   clearAll: []
-  preview: [fn: () => void]
+  preview: []
 }>()
 
-const router = useRouter()
 
 function clearAll() {
-  Modal.confirm({
-    title: '操作提示',
-    type: 'warning',
-    content: '确定清空所有组件吗?',
-    okText: '确认',
-    cancelText: '取消',
-    onOk: () => {
-      emit('clearAll')
-    },
-  })
+  emit('clearAll')
 }
 
 function preview() {
-  emit('preview', () => {
-    const { href } = router.resolve({
-      path: '/preview',
-    })
-    window.open(href, '_blank')
-  })
+  emit('preview')
 }
 </script>
 

@@ -12,7 +12,7 @@ const contentStyle: CSSProperties = {
 
 const designerStore = useDesignerStore()
 
-const layout = computed(() => designerStore.layout)
+const layout = computed(() => designerStore.getGridLayout)
 
 const gridConfig = computed(() => designerStore.gridConfig)
 </script>

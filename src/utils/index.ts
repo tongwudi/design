@@ -12,7 +12,7 @@ export const componentInstall = <T>(key: string, node: T) => {
   }
 }
 
-export const fetchChartComponent = (dropData: ConfigType) => {
+export const fetchChartComponent = (dropData: ComponentItem) => {
   const { key } = dropData
   return fetchComponent(key)?.default
 }

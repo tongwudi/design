@@ -1,5 +1,5 @@
 import { ChartList } from './Charts'
 
-export const componentsList: Record<string, ConfigType[]> = {
+export const componentsList: Record<string, ComponentItem[]> = {
   Charts: ChartList,
 }

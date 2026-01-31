@@ -1,5 +1,5 @@
 
-export const BarConfig: ConfigType = {
+export const BarConfig: ComponentItem = {
   name: '柱状图',
   category: 'Charts',
   key: 'Bars',

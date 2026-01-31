@@ -1,49 +1,45 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
 
-// const props = defineProps({
-//   chartConfig: {
-//     type: Object,
-//     required: true,
-//   },
-// })
+const props = defineProps({
+  chartConfig: {
+    type: Object,
+    // required: true,
+  },
+})
 
 const echartsRef = ref(null)
 let myChart: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
-const baseOption = () => ({
-  legend: {
-    top: 'top',
-  },
-  tooltip: {},
-  grid: {
-    top: '8%',
-    bottom: 0,
-    left: '4%',
-    right: '2%',
-    containLabel: true,
-  },
-  dataset: {
-    source: [
-      ['product', '2015', '2016', '2017'],
-      ['Matcha Latte', 43.3, 85.8, 93.7],
-      ['Milk Tea', 83.1, 73.4, 55.1],
-      ['Cheese Cocoa', 86.4, 65.2, 82.5],
-      ['Walnut Brownie', 72.4, 53.9, 39.1],
-    ],
-  },
-  xAxis: { type: 'category' },
-  yAxis: {},
-  series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }],
-})
 
-// watch(
-//   () => props.chartConfig,
-//   newVal => {
-//     const mergedOption = { ...baseOption(), ...newVal }
-//     initEChart()
-//   },
-// )
+const getMergedOption = () => {
+  const baseOption = {
+    legend: {
+      top: 'top',
+    },
+    tooltip: {},
+    grid: {
+      top: '12%',
+      bottom: 0,
+      left: '4%',
+      right: '2%',
+      containLabel: true,
+    },
+    dataset: {
+      source: [
+        ['product', '2015', '2016', '2017'],
+        ['Matcha Latte', 43.3, 85.8, 93.7],
+        ['Milk Tea', 83.1, 73.4, 55.1],
+        ['Cheese Cocoa', 86.4, 65.2, 82.5],
+        ['Walnut Brownie', 72.4, 53.9, 39.1],
+      ],
+    },
+    xAxis: { type: 'category' },
+    yAxis: {},
+    series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }],
+  }
+  return { ...baseOption, ...props.chartConfig }
+}
 
 function initEChart() {
   if (!echartsRef.value) {
@@ -53,7 +49,7 @@ function initEChart() {
     myChart.dispose()
   }
   myChart = echarts.init(echartsRef.value, null, { renderer: 'canvas' })
-  myChart.setOption(baseOption(), true)
+  myChart.setOption(getMergedOption(), true)
 }
 
 function initResizeObserver() {
@@ -65,6 +61,14 @@ function initResizeObserver() {
   })
   resizeObserver.observe(echartsRef.value)
 }
+
+// watch(
+//   () => props.chartConfig,
+//   () => {
+//     initEChart()
+//   },
+//   { deep: true },
+// )
 
 onMounted(() => {
   setTimeout(initEChart, 500)

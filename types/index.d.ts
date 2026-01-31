@@ -1,42 +1,33 @@
-declare interface  ConfigType {
-  name: string,
-  category: string,
-  key: string,
-  w: number,
-  h: number,
-  minW: number,
-  minH: number,
-}
-
-declare interface BasicField {
-  title?: string
-  showSearch?: boolean
-  searchType?: 'input' | 'select'
-  searchKey?: string
-}
-
-declare interface layoutChildItem {
+declare interface ComponentItem {
   name: string
-  i: string
-  x: number
-  y: number
+  category: string
+  key: string
   w: number
   h: number
   minW: number
   minH: number
-  config?: BasicField
 }
 
-declare interface ComponentItem {
-  name: string
-  children: layoutChildItem[]
+declare interface BasicConfig {
+  title?: string
+  showSearch?: boolean
+  searchType?: 'date' | 'input' | 'select'
+  searchKey?: string
 }
 
-declare interface DataSourceItem {
+declare interface DataSource {
   id: string
   type: 'static' | 'api'
   data?: any[]
   url?: string
   method?: 'GET' | 'POST'
   dataPath?: string
+}
+
+declare interface layoutItem extends ComponentItem {
+  i: string
+  x: number
+  y: number
+  config?: BasicConfig
+  dataSource?: DataSource
 }

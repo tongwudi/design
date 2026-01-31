@@ -2,7 +2,7 @@
 import { useAsideHook } from '@/hooks/use-aside'
 
 const emit = defineEmits<{
-  drag: [component: layoutChildItem]
+  drag: [component: layoutItem]
   dragend: []
 }>()
 

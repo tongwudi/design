@@ -30,16 +30,16 @@ export function useGridLayout(layout: any, gridConfig: any) {
       })
       await nextTick()
     }
-    if (!itemRefs.value.drop) {
+    const itemRef = itemRefs.value.drop
+    if (!itemRef) {
       return
     }
     if (index === -1) {
       return
     }
-    if (itemRefs.value.drop.el.style) {
-      itemRefs.value.drop.el.style.display = 'none'
+    if (itemRef.el.style) {
+      itemRef.el.style.display = 'none'
     }
-    const itemRef = itemRefs.value.drop
     const new_pos = itemRef.calcXY(mouseXY.y - parentRect.top, mouseXY.x - parentRect.left)
     if (mouseInGrid === true) {
     // dragEvent的参数分别是：[eventName, i, x, y, h, w]

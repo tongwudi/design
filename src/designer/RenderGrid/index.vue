@@ -2,6 +2,7 @@
 <script lang="ts" setup>
 import { DatePicker, Input, Select } from 'ant-design-vue'
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
+import Bars from '@/components/Charts/Bars/index.vue'
 
 const props = defineProps({
   gridConfig: {
@@ -108,7 +109,12 @@ function renderComponentProps(type: string) {
         @mouseenter="hoverKey = item.i"
         @mouseleave="hoverKey = ''"
       >
-        <a-card class="full-card" :title="item.config.title" :class="{ active: selectedId === item.i }" @click.stop="selectWidget(item.i)">
+        <a-card
+          class="full-card"
+          :title="item.config.title"
+          :class="{ active: selectedId === item.i }"
+          @click.stop="selectWidget(item.i)"
+        >
           <!-- 右上搜索框 -->
           <template v-if="item.config.showSearch" #extra>
             <component
@@ -119,7 +125,7 @@ function renderComponentProps(type: string) {
             />
           </template>
           <!-- 内容区域 -->
-          <BarChart />
+          <Bars v-if="item.key === 'Bars'" />
         </a-card>
         <div v-if="!preview && hoverKey === item.i" class="toolbar">
           <a-space :size="0">
@@ -161,7 +167,7 @@ function renderComponentProps(type: string) {
     padding: 4px 8px;
     border-bottom-left-radius: 8px;
     background-color: #fff;
-    border:1px solid #e8e8e8;
+    border: 1px solid #e8e8e8;
   }
 }
 </style>

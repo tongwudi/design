@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
+import { componentsList } from '@/components/index'
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
+    componentsList: Object.freeze(componentsList),
     layout: [] as layoutChildItem[],
     gridConfig: {
       colNum: 24,
@@ -11,6 +13,9 @@ export const useDesignerStore = defineStore('designer', {
     selectedWidgetId: '',
   }),
   getters: {
+    getComponentList: (state) => {
+      return state.componentsList
+    },
     selectedConfig: (state) => {
       const selectedWidget = state.layout.find(obj => obj.i === state.selectedWidgetId)
       if (!selectedWidget) {

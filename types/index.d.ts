@@ -1,3 +1,13 @@
+declare interface  ConfigType {
+  name: string,
+  category: string,
+  key: string,
+  w: number,
+  h: number,
+  minW: number,
+  minH: number,
+}
+
 declare interface BasicField {
   title?: string
   showSearch?: boolean

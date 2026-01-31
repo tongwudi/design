@@ -94,9 +94,6 @@ function removeWidget(id: string) {
     <a-layout>
       <a-layout-sider :style="siderStyle" :width="200">
         <LeftPanel @drag="drag" @dragend="dragend" />
-        <div v-for="item in layout" :key="item.i">
-          {{ item }}
-        </div>
       </a-layout-sider>
       <a-layout-content id="grid-layout" :style="contentStyle">
         <div v-if="layout.length === 0" class="empty">

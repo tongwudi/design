@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
 import { Modal } from 'ant-design-vue'
-// import { useGridLayout } from '@/hooks'
 import { useDesignerStore } from '@/store'
 
 const headerStyle: CSSProperties = {
@@ -33,15 +32,7 @@ const layout = computed({
   set: newLayout => designerStore.updateLayout(newLayout),
 })
 const gridConfig = computed(() => designerStore.gridConfig)
-const selectedConfig = computed(() => designerStore.selectedConfig)
 const selectedWidgetId = computed(() => designerStore.selectedWidgetId)
-
-// const {
-//   drag,
-//   dragend,
-//   setLayoutRef,
-//   setItemRef,
-// } = useGridLayout(layout, gridConfig)
 
 const layoutRef = ref<any>({})
 const itemRefs = ref<any>({})
@@ -71,12 +62,13 @@ async function drag(component: any) {
   }
   const index = layout.value.findIndex(item => item.i === 'drop')
   if (mouseInGrid === true && (index === -1)) {
-    designerStore.addWidget({
+    DragPos = {
       ...component,
       i: 'drop',
       x: (layout.value.length * 2) % gridConfig.value.colNum,
       y: layout.value.length + gridConfig.value.colNum,
-    })
+    }
+    designerStore.addWidget(DragPos)
     await nextTick()
   }
   const itemRef = itemRefs.value.drop
@@ -94,13 +86,15 @@ async function drag(component: any) {
   // dragEvent的参数分别是：[eventName, i, x, y, h, w]
     layoutRef.value.emitter.emit('dragEvent', ['dragstart', 'drop', new_pos.x, new_pos.y, component.h, component.w])
     DragPos = {
-      ...layout.value[index],
+      ...DragPos,
       i: String(new Date().getTime()),
+      x: new_pos.x,
+      y: new_pos.y,
     }
   }
   else {
-    layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', new_pos.x, new_pos.y])
-    layout.value = layout.value.filter(obj => obj.i !== 'drop')
+    layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', new_pos.x, new_pos.y, component.h, component.w])
+    designerStore.removeWidget('drop')
     await nextTick()
   }
 }
@@ -112,15 +106,21 @@ async function dragend() {
     mouseInGrid = true
   }
   if (mouseInGrid === true) {
-    layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', DragPos.x, DragPos.y])
-    layout.value = layout.value.filter(obj => obj.i !== 'drop')
-    designerStore.addWidget({ ...DragPos })
+    layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', DragPos.x, DragPos.y, DragPos.h, DragPos.w])
+    designerStore.updateWidget('drop', DragPos)
     await nextTick()
-    layoutRef.value.emitter.emit('dragEvent', ['dragend', DragPos.i, DragPos.x, DragPos.y])
+    layoutRef.value.emitter.emit('dragEvent', ['dragend', DragPos.i, DragPos.x, DragPos.y, DragPos.h, DragPos.w])
   }
 }
 
 function clearAll() {
+  if (layout.value.length === 0) {
+    Modal.error({
+      title: '操作提示',
+      content: '请先添加组件',
+    })
+    return
+  }
   Modal.confirm({
     title: '操作提示',
     type: 'warning',
@@ -134,6 +134,13 @@ function clearAll() {
 }
 
 function preview() {
+  if (layout.value.length === 0) {
+    Modal.error({
+      title: '操作提示',
+      content: '请先添加组件',
+    })
+    return
+  }
   designerStore.saveLayout(layout.value)
   const { href } = router.resolve({
     path: '/preview',
@@ -188,7 +195,7 @@ function removeWidget(id: string) {
         />
       </a-layout-content>
       <a-layout-sider :style="siderStyle" :width="300">
-        <RightSetting v-if="selectedWidgetId !== ''" v-model="selectedConfig" />
+        <RightSetting v-if="selectedWidgetId !== ''" />
       </a-layout-sider>
     </a-layout>
   </a-layout>

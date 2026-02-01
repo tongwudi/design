@@ -13,31 +13,45 @@ export const useDesignerStore = defineStore('designer', {
     selectedWidgetId: '',
   }),
   getters: {
-    getComponentList: (state) => state.componentsList,
+    getComponentList: (state) => {
+      return state.componentsList
+    },
+    getGridLayout: (state) => {
+      return JSON.parse(sessionStorage.getItem('layout') || '[]') || state.layout
+    },
     selectedConfig: (state) => {
       const selectedWidget = state.layout.find((obj) => obj.i === state.selectedWidgetId)
       if (!selectedWidget) {
-        return null
+        return
       }
-      return selectedWidget.config || {}
-    },
-    getGridLayout: (state) => {
-      const layout = JSON.parse(sessionStorage.getItem('layout') || '[]') || state.layout
-      return layout
+      return selectedWidget.config
     },
   },
   actions: {
-    addWidget(widget: layoutItem) {
-      const defaultConfig: BasicConfig = {
-        title: '',
-        showSearch: false,
-        searchType: 'date',
-        searchKey: 'keyword',
+    addWidget(widget: DragWidget) {
+      this.layout.push(widget as layoutItem)
+    },
+    updateWidget(id: string, newWidget: DragWidget) {
+      const index = this.layout.findIndex((obj) => obj.i === id)
+      const defaultConfig: DefaultConfig = {
+        type: 'static',
+        data: [],
+        url: '',
+        method: 'GET',
+        dataPath: '',
+        option: {
+          title: '',
+          showSearch: false,
+          searchType: 'date',
+          searchKey: 'keyword',
+        }
       }
-      this.layout.push({
-        ...widget,
+      const widget = {
+        ...this.layout[index],
+        ...newWidget,
         config: defaultConfig,
-      })
+      }
+      this.layout[index] = widget
     },
     removeWidget(id: string) {
       this.layout = this.layout.filter((obj) => obj.i !== id)
@@ -47,6 +61,13 @@ export const useDesignerStore = defineStore('designer', {
     },
     setSelectedWidgetId(id: string) {
       this.selectedWidgetId = id
+    },
+    updateSelectedConfig(newConfig: DefaultConfig) {
+      const index  = this.layout.findIndex((obj) => obj.i === this.selectedWidgetId)
+      if (index  === -1) {
+        return
+      }
+      this.layout[index]!.config = { ...newConfig }
     },
     clearLayout() {
       this.layout = []

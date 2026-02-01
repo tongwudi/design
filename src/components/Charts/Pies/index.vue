@@ -44,7 +44,7 @@ const getMergedOption = async () => {
     },
     xAxis: { type: 'category' },
     yAxis: {},
-    series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }],
+    series: [{ type: 'pie' }, { type: 'pie' }, { type: 'pie' }],
   }
   return baseOption
 }

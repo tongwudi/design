@@ -8,15 +8,20 @@ declare interface ComponentItem {
   minH: number
 }
 
-declare interface BasicConfig {
+declare interface DragWidget extends ComponentItem {
+  i: string
+  x: number
+  y: number
+}
+
+declare interface DefaultOption {
   title?: string
   showSearch?: boolean
   searchType?: 'date' | 'input' | 'select'
   searchKey?: string
 }
 
-declare interface DataSource {
-  id: string
+declare interface DefaultDataSource {
   type: 'static' | 'api'
   data?: any[]
   url?: string
@@ -24,10 +29,10 @@ declare interface DataSource {
   dataPath?: string
 }
 
-declare interface layoutItem extends ComponentItem {
-  i: string
-  x: number
-  y: number
-  config?: BasicConfig
-  dataSource?: DataSource
+declare interface DefaultConfig extends DefaultDataSource {
+  option: DefaultOption
+}
+
+declare interface layoutItem extends DragWidget {
+  config: DefaultConfig
 }

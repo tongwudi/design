@@ -3,6 +3,8 @@
 import { DatePicker, Input, Select } from 'ant-design-vue'
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
 import Bars from '@/components/Charts/Bars/index.vue'
+import Lines from '@/components/Charts/Lines/index.vue'
+import Pies from '@/components/Charts/Pies/index.vue'
 
 const props = defineProps({
   gridConfig: {
@@ -111,21 +113,21 @@ function renderComponentProps(type: string) {
       >
         <a-card
           class="full-card"
-          :title="item.config.title"
+          :title="item.config.option.title"
           :class="{ active: selectedId === item.i }"
           @click.stop="selectWidget(item.i)"
         >
-          <!-- 右上搜索框 -->
-          <template v-if="item.config.showSearch" #extra>
+          <template v-if="item.config.option.showSearch" #extra>
             <component
-              :is="getSearchComponent(item.config.searchType)"
-              v-bind="renderComponentProps(item.config.searchType)"
-              v-model:value="item.config.searchValue"
+              :is="getSearchComponent(item.config.option.searchType)"
+              v-bind="renderComponentProps(item.config.option.searchType)"
+              v-model:value="item.config.option.searchValue"
               style="width: 120px;"
             />
           </template>
-          <!-- 内容区域 -->
-          <Bars v-if="item.key === 'Bars'" />
+          <Bars v-if="item.key === 'Bars'" :chart-config="item.config" />
+          <Lines v-if="item.key === 'Lines'" :chart-config="item.config" />
+          <Pies v-if="item.key === 'Pies'" :chart-config="item.config" />
         </a-card>
         <div v-if="!preview && hoverKey === item.i" class="toolbar">
           <a-space :size="0">

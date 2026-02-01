@@ -20,7 +20,7 @@ const gridConfig = computed(() => designerStore.gridConfig)
 <template>
   <a-layout>
     <a-layout-content :style="contentStyle">
-      <RenderGrid v-model="layout" :grid-config="gridConfig" preview />
+      <RenderGrid :layout="layout" :grid-config="gridConfig" preview />
     </a-layout-content>
   </a-layout>
 </template>

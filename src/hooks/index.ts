@@ -1,1 +1,1 @@
-export * from './use-grid-layout'
+export * from './use-aside'

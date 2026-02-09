@@ -1,10 +1,7 @@
 <!-- eslint-disable no-console -->
 <script lang="ts" setup>
-import { DatePicker, Input, Select } from 'ant-design-vue'
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
-import Bars from '@/components/Charts/Bars/index.vue'
-import Lines from '@/components/Charts/Lines/index.vue'
-import Pies from '@/components/Charts/Pies/index.vue'
+import { componentInstall, fetchChartComponent } from '@/utils'
 
 const props = defineProps({
   gridConfig: {
@@ -55,33 +52,9 @@ function removeWidget(id: string | number) {
   emit('removeWidget', id)
 }
 
-function getSearchComponent(type: string) {
-  const componentMap: Record<string, any> = {
-    date: DatePicker,
-    input: Input,
-    select: Select,
-  }
-  return componentMap[type] || componentMap.date
-}
-
-function renderComponentProps(type: string) {
-  const componentMap: Record<string, any> = {
-    date: {
-      valueFormat: 'YYYY-MM-DD',
-      onChange: (value: string) => {
-        console.log(value)
-      },
-    },
-    input: {
-      onPressEnter: (e: any) => {
-        console.log(e)
-      },
-    },
-    select: {
-      options: [],
-    },
-  }
-  return componentMap[type] || componentMap.date
+function renderComponent(item: ComponentItem) {
+  componentInstall(item.key, fetchChartComponent(item))
+  return item.key
 }
 </script>
 
@@ -106,28 +79,21 @@ function renderComponentProps(type: string) {
       :min-h="item.minH"
     >
       <div
-        v-if="item.i !== 'drop'"
+        v-if="item.config"
         class="full-card_wrapper"
         @mouseenter="hoverKey = item.i"
         @mouseleave="hoverKey = ''"
       >
         <a-card
           class="full-card"
-          :title="item.config.option.title"
+          :title="item.config.card.title"
           :class="{ active: selectedId === item.i }"
           @click.stop="selectWidget(item.i)"
         >
-          <template v-if="item.config.option.showSearch" #extra>
-            <component
-              :is="getSearchComponent(item.config.option.searchType)"
-              v-bind="renderComponentProps(item.config.option.searchType)"
-              v-model:value="item.config.option.searchValue"
-              style="width: 120px;"
-            />
+          <template v-if="item.config.card.showSearch" #extra>
+            <render-extra v-model="item.config" />
           </template>
-          <Bars v-if="item.key === 'Bars'" :chart-config="item.config" />
-          <Lines v-if="item.key === 'Lines'" :chart-config="item.config" />
-          <Pies v-if="item.key === 'Pies'" :chart-config="item.config" />
+          <component :is="renderComponent(item)" :chart-config="item.config" />
         </a-card>
         <div v-if="!preview && hoverKey === item.i" class="toolbar">
           <a-space :size="0">

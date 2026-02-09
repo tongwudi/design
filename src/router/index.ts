@@ -4,7 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('@/views/designer-page/index.vue'),
+    component: () => import('@/views/designer/index.vue'),
     name: 'DesignerPage',
   },
   {

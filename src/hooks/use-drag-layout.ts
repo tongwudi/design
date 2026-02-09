@@ -1,19 +1,34 @@
-import { useDesignerStore } from '@/store'
+import { useDesignerStore } from '@/store/index'
 
-export function useGridLayout(layout: any, gridConfig: any) {
+export function useDragLayout(gridConfig: any) {
   const designerStore = useDesignerStore()
+
+  const layout = computed({
+    get: () => designerStore.layout,
+    set: newLayout => designerStore.updateLayout(newLayout),
+  })
 
   const layoutRef = ref<any>({})
   const itemRefs = ref<any>({})
   const mouseXY = { x: 0, y: 0 }
   let DragPos: any = {}
 
-  document.addEventListener('dragover', (e) => {
-    mouseXY.x = e.clientX
-    mouseXY.y = e.clientY
-  }, false)
+  onMounted(() => {
+    document.addEventListener('dragover', (e) => {
+      mouseXY.x = e.clientX
+      mouseXY.y = e.clientY
+    }, false)
+  })
 
-  async function drag(element: any) {
+  function setLayoutRef(el: HTMLElement) {
+    layoutRef.value = el
+  }
+
+  function setItemRef(el: HTMLElement, item: any) {
+    itemRefs.value[item.i] = el
+  }
+
+  async function drag(component: any) {
     const parentRect = document.getElementById('grid-layout')?.getBoundingClientRect() as DOMRect
     let mouseInGrid = false
     if (((mouseXY.x > parentRect.left) && (mouseXY.x < parentRect.right)) && ((mouseXY.y > parentRect.top) && (mouseXY.y < parentRect.bottom))) {
@@ -21,13 +36,13 @@ export function useGridLayout(layout: any, gridConfig: any) {
     }
     const index = layout.value.findIndex(item => item.i === 'drop')
     if (mouseInGrid === true && (index === -1)) {
-      designerStore.addWidget({
-        ...element,
+      DragPos = {
+        ...component,
         i: 'drop',
-        x: (layout.value.length * 2) % gridConfig.value.colNum,
-        y: layout.value.length + gridConfig.value.colNum,
-        config: {},
-      })
+        x: (layout.value.length * 2) % gridConfig.colNum,
+        y: layout.value.length + gridConfig.colNum,
+      }
+      designerStore.addWidget(DragPos)
       await nextTick()
     }
     const itemRef = itemRefs.value.drop
@@ -42,16 +57,18 @@ export function useGridLayout(layout: any, gridConfig: any) {
     }
     const new_pos = itemRef.calcXY(mouseXY.y - parentRect.top, mouseXY.x - parentRect.left)
     if (mouseInGrid === true) {
-    // dragEvent的参数分别是：[eventName, i, x, y, h, w]
-      layoutRef.value.emitter.emit('dragEvent', ['dragstart', 'drop', new_pos.x, new_pos.y, element.h, element.w])
+      // dragEvent的参数分别是：[eventName, i, x, y, h, w]
+      layoutRef.value.emitter.emit('dragEvent', ['dragstart', 'drop', new_pos.x, new_pos.y, component.h, component.w])
       DragPos = {
-        ...layout.value[index],
+        ...DragPos,
         i: String(new Date().getTime()),
+        x: new_pos.x,
+        y: new_pos.y,
       }
     }
     else {
-      layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', new_pos.x, new_pos.y])
-      layout.value = layout.value.filter(obj => obj.i !== 'drop')
+      layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', new_pos.x, new_pos.y, component.h, component.w])
+      designerStore.removeWidget('drop')
       await nextTick()
     }
   }
@@ -63,26 +80,18 @@ export function useGridLayout(layout: any, gridConfig: any) {
       mouseInGrid = true
     }
     if (mouseInGrid === true) {
-      layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', DragPos.x, DragPos.y])
-      layout.value = layout.value.filter(obj => obj.i !== 'drop')
-      designerStore.addWidget({ ...DragPos })
+      layoutRef.value.emitter.emit('dragEvent', ['dragend', 'drop', DragPos.x, DragPos.y, DragPos.h, DragPos.w])
+      designerStore.updateWidget('drop', DragPos)
       await nextTick()
-      layoutRef.value.emitter.emit('dragEvent', ['dragend', DragPos.i, DragPos.x, DragPos.y])
+      layoutRef.value.emitter.emit('dragEvent', ['dragend', DragPos.i, DragPos.x, DragPos.y, DragPos.h, DragPos.w])
     }
   }
 
-  function setLayoutRef(el: HTMLElement) {
-    layoutRef.value = el
-  }
-
-  function setItemRef(el: HTMLElement, item: any) {
-    itemRefs.value[item.i] = el
-  }
-
   return {
-    drag,
-    dragend,
+    layout,
     setLayoutRef,
     setItemRef,
+    drag,
+    dragend,
   }
 }

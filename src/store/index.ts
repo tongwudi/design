@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { componentsList } from '@/components/index'
+import { cardConfig, componentsList } from '@/components/index'
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
     componentsList: Object.freeze(componentsList),
-    layout: [] as layoutItem[],
+    layout: [] as LayoutItem[],
     gridConfig: {
       colNum: 24,
       rowHeight: 30,
@@ -16,11 +16,8 @@ export const useDesignerStore = defineStore('designer', {
     getComponentList: (state) => {
       return state.componentsList
     },
-    getGridLayout: (state) => {
-      return JSON.parse(sessionStorage.getItem('layout') || '[]') || state.layout
-    },
-    selectedConfig: (state) => {
-      const selectedWidget = state.layout.find((obj) => obj.i === state.selectedWidgetId)
+    getSelectedConfig: (state) => {
+      const selectedWidget = state.layout.find(obj => obj.i === state.selectedWidgetId)
       if (!selectedWidget) {
         return
       }
@@ -29,32 +26,21 @@ export const useDesignerStore = defineStore('designer', {
   },
   actions: {
     addWidget(widget: DragWidget) {
-      this.layout.push(widget as layoutItem)
+      this.layout.push(widget as LayoutItem)
     },
     updateWidget(id: string, newWidget: DragWidget) {
-      const index = this.layout.findIndex((obj) => obj.i === id)
-      const defaultConfig: DefaultConfig = {
-        type: 'static',
-        data: [],
-        url: '',
-        method: 'GET',
-        dataPath: '',
-        option: {
-          title: '',
-          showSearch: false,
-          searchType: 'date',
-          searchKey: 'keyword',
-        }
-      }
+      const index = this.layout.findIndex(obj => obj.i === id)
+      const obj = this.layout[index] as LayoutItem
       const widget = {
-        ...this.layout[index],
         ...newWidget,
-        config: defaultConfig,
+        config: {
+          card: { ...cardConfig[obj.category]?.[obj.key] },
+        },
       }
       this.layout[index] = widget
     },
     removeWidget(id: string) {
-      this.layout = this.layout.filter((obj) => obj.i !== id)
+      this.layout = this.layout.filter(obj => obj.i !== id)
       if (this.selectedWidgetId === id) {
         this.selectedWidgetId = ''
       }
@@ -62,23 +48,25 @@ export const useDesignerStore = defineStore('designer', {
     setSelectedWidgetId(id: string) {
       this.selectedWidgetId = id
     },
-    updateSelectedConfig(newConfig: DefaultConfig) {
-      const index  = this.layout.findIndex((obj) => obj.i === this.selectedWidgetId)
-      if (index  === -1) {
+    updateConfig(newConfig: DefaultConfig) {
+      const index = this.layout.findIndex(obj => obj.i === this.selectedWidgetId)
+      if (index === -1) {
         return
       }
       this.layout[index]!.config = { ...newConfig }
     },
-    clearLayout() {
+    clearAllLayout() {
       this.layout = []
       this.selectedWidgetId = ''
     },
-    updateLayout(newLayout: layoutItem[]) {
+    updateLayout(newLayout: LayoutItem[]) {
       this.layout = newLayout
     },
-    saveLayout(newLayout: layoutItem[]) {
-      this.layout = newLayout
-      sessionStorage.setItem('layout', JSON.stringify(this.layout))
+    saveLayout() {
+      sessionStorage.setItem('LAYOUT', JSON.stringify(this.layout))
+    },
+    getLayout() {
+      return JSON.parse(sessionStorage.getItem('LAYOUT') || '[]') || this.layout
     },
   },
 })

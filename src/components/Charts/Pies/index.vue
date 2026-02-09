@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-import axios from 'axios'
+import { useChartData } from '@/hooks/use-chart-data'
 
 const props = defineProps({
   chartConfig: {
@@ -9,90 +9,80 @@ const props = defineProps({
   },
 })
 
-const echartsRef = ref(null)
-let myChart: echarts.ECharts | null = null
-let resizeObserver: ResizeObserver | null = null
+const { fetchChartData } = useChartData(props.chartConfig, 'pie')
 
-const getMergedOption = async () => {
-  if (props.chartConfig.url) {
-    const response = await axios({
-      url: props.chartConfig.url,
-      method: props.chartConfig.method,
-    })
-    console.log(response.data)
+const chartRef = ref<HTMLDivElement | null>(null)
+let chartInstance: echarts.ECharts | null = null
+let resizeObserver: ResizeObserver | null = null
+const defaultData = [
+  { value: 0, id: '2015983101094354947', name: '每月统计用户数据' },
+  { value: 0, id: '2014137236251660290', name: '每月统计用户登录数量' },
+]
+
+async function initChart() {
+  if (!chartRef.value) {
+    return
   }
-  const baseOption = {
+  const { searchParams = [] } = props.chartConfig
+  const requestData = await fetchChartData(searchParams)
+  if (chartInstance) {
+    chartInstance.dispose()
+  }
+  chartInstance = echarts.init(chartRef.value)
+  const option = {
     legend: {
-      top: 'top',
+      type: 'scroll',
+      top: 0,
     },
     tooltip: {},
-    grid: {
-      top: '12%',
-      bottom: 0,
-      left: '4%',
-      right: '2%',
-      containLabel: true,
-    },
-    dataset: {
-      source: [
-        ['product', '2015', '2016', '2017'],
-        ['Matcha Latte', 43.3, 85.8, 93.7],
-        ['Milk Tea', 83.1, 73.4, 55.1],
-        ['Cheese Cocoa', 86.4, 65.2, 82.5],
-        ['Walnut Brownie', 72.4, 53.9, 39.1],
-      ],
-    },
-    xAxis: { type: 'category' },
-    yAxis: {},
-    series: [{ type: 'pie' }, { type: 'pie' }, { type: 'pie' }],
+    series: [
+      {
+        type: 'pie',
+        name: '',
+        center: ['50%', '60%'],
+        radius: '60%',
+        label: {
+          show: false,
+        },
+        data: requestData || defaultData,
+      },
+    ],
   }
-  return baseOption
+  chartInstance.setOption(option, true)
 }
 
-async function initEChart() {
-  if (!echartsRef.value) {
-    return
-  }
-  if (myChart) {
-    myChart.dispose()
-  }
-  myChart = echarts.init(echartsRef.value, null, { renderer: 'canvas' })
-  myChart.setOption(await getMergedOption(), true)
-}
-
-function initResizeObserver() {
-  if (!echartsRef.value) {
-    return
-  }
-  resizeObserver = new ResizeObserver(() => {
-    myChart?.resize()
-  })
-  resizeObserver.observe(echartsRef.value)
-}
-
-// watch(
-//   () => props.chartConfig,
-//   () => {
-//     initEChart()
-//   },
-//   { deep: true },
-// )
+watch(
+  () => props.chartConfig.searchParams,
+  async (newValue) => {
+    if (!newValue) {
+      return
+    }
+    initChart()
+  },
+  { deep: true },
+)
 
 onMounted(() => {
-  setTimeout(initEChart, 500)
+  setTimeout(initChart, 200)
   initResizeObserver()
 })
 
 onUnmounted(() => {
-  if (myChart) {
-    myChart.dispose()
-  }
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-  }
+  chartInstance?.dispose()
+  resizeObserver?.disconnect()
 })
+
+function initResizeObserver() {
+  if (!chartRef.value) {
+    return
+  }
+  resizeObserver = new ResizeObserver(() => {
+    chartInstance?.resize()
+  })
+  resizeObserver.observe(chartRef.value)
+}
 </script>
 
 <template>
-  <div ref="echartsRef" style="width: 100%; height: 100%" />
+  <div ref="chartRef" style="width: 100%; height: 100%" />
 </template>

@@ -14,25 +14,23 @@ declare interface DragWidget extends ComponentItem {
   y: number
 }
 
-declare interface DefaultOption {
-  title?: string
-  showSearch?: boolean
-  searchType?: 'date' | 'input' | 'select'
-  searchKey?: string
+// declare interface DefaultDataSource {
+//   type: 'static' | 'api'
+//   data?: any[]
+//   url?: string
+//   method?: 'GET' | 'POST'
+//   dataPath?: string
+// }
+
+declare interface DefaultCard<T = any> {
+  [key: string]: T
 }
 
-declare interface DefaultDataSource {
-  type: 'static' | 'api'
-  data?: any[]
-  url?: string
-  method?: 'GET' | 'POST'
-  dataPath?: string
+declare interface DefaultConfig {
+  card: DefaultCard
+  [key: string]: any
 }
 
-declare interface DefaultConfig extends DefaultDataSource {
-  option: DefaultOption
-}
-
-declare interface layoutItem extends DragWidget {
+declare interface LayoutItem extends DragWidget {
   config: DefaultConfig
 }

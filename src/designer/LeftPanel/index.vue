@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { useAsideHook } from '@/hooks/use-aside'
+import { useAsideHook } from '@/hooks'
 
 const emit = defineEmits<{
-  drag: [component: layoutItem]
+  drag: [component: ComponentItem]
   dragend: []
 }>()
 

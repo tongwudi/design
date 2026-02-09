@@ -1,5 +1,12 @@
-import { ChartList } from './Charts'
+import { BasicConfig, BasicList } from './Basic'
+import { ChartsConfig, ChartsList } from './Charts'
 
 export const componentsList: Record<string, ComponentItem[]> = {
-  Charts: ChartList,
+  Basic: BasicList,
+  Charts: ChartsList,
+}
+
+export const cardConfig: Record<string, Record<string, any>> = {
+  Basic: BasicConfig,
+  Charts: ChartsConfig,
 }

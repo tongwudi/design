@@ -1,6 +1,6 @@
 import { useDesignerStore } from '@/store'
 
-export const useAsideHook = () => {
+export function useAsideHook() {
   const designerStore = useDesignerStore()
 
   const packagesListObj: Record<string, string> = {

@@ -4,6 +4,7 @@ export function useAsideHook() {
   const designerStore = useDesignerStore()
 
   const packagesListObj: Record<string, string> = {
+    Basic: '基础',
     Charts: '图表',
   }
 

@@ -1,29 +1,26 @@
-<script  lang="ts" setup>
-defineProps<{
-  title?: string
+<script lang="ts" setup>
+import * as Icons from '@ant-design/icons-vue'
+
+const props = defineProps<{
+  title: string
+  btns: {
+    title: string
+    icon: keyof typeof Icons
+    isDanger?: boolean
+    show?: boolean
+    clickFn?: () => void
+  }[]
 }>()
 
-const emit = defineEmits<{
-  close: []
-  clearAll: []
-  preview: []
-  save: []
-}>()
+const getBtns = computed(() => {
+  return props.btns?.map(btn => ({
+    ...btn,
+    show: btn.show ?? true,
+  })) || []
+})
 
-function close() {
-  emit('close')
-}
-
-function clearAll() {
-  emit('clearAll')
-}
-
-function preview() {
-  emit('preview')
-}
-
-function save() {
-  emit('save')
+function getIconComponent(iconName: keyof typeof Icons): Component {
+  return Icons[iconName]
 }
 </script>
 
@@ -33,30 +30,14 @@ function save() {
       {{ title || '仪表盘设计器' }}
     </div>
     <a-space>
-      <a-button v-if="title" type="link" danger @click="close">
-        <template #icon>
-          <CloseOutlined />
-        </template>
-        取消
-      </a-button>
-      <a-button type="link" @click="clearAll">
-        <template #icon>
-          <DeleteOutlined />
-        </template>
-        清空
-      </a-button>
-      <a-button type="link" @click="preview">
-        <template #icon>
-          <EyeOutlined />
-        </template>
-        预览
-      </a-button>
-      <a-button type="link" @click="save">
-        <template #icon>
-          <SaveOutlined />
-        </template>
-        保存
-      </a-button>
+      <template v-for="(btn, idx) in getBtns" :key="idx">
+        <a-button v-if="btn.show" type="link" :danger="btn.isDanger" @click="btn.clickFn">
+          <template #icon>
+            <component :is="getIconComponent(btn.icon)" />
+          </template>
+          {{ btn.title }}
+        </a-button>
+      </template>
     </a-space>
   </a-row>
 </template>

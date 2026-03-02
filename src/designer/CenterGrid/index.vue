@@ -18,38 +18,22 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['setLayoutRef', 'setItemRef', 'selectWidget', 'removeWidget'])
+const emit = defineEmits(['select', 'remove'])
 
 const layout = defineModel('modelValue', {
   type: Object,
   default: () => ({}),
 })
 
-const hoverKey = ref<string>('')
-
-function setLayoutRef(el: HTMLElement) {
+function select(id: string) {
   if (props.preview) {
     return
   }
-  emit('setLayoutRef', el)
+  emit('select', id)
 }
 
-function setItemRef(el: HTMLElement, item: any) {
-  if (props.preview) {
-    return
-  }
-  emit('setItemRef', el, item)
-}
-
-function selectWidget(id: string) {
-  if (props.preview) {
-    return
-  }
-  emit('selectWidget', id)
-}
-
-function removeWidget(id: string | number) {
-  emit('removeWidget', id)
+function remove(id: string | number) {
+  emit('remove', id)
 }
 
 function renderComponent(item: ComponentItem) {
@@ -60,48 +44,39 @@ function renderComponent(item: ComponentItem) {
 
 <template>
   <GridLayout
-    :ref="setLayoutRef"
     v-model:layout="layout"
     v-bind="gridConfig"
     :is-draggable="!preview"
-    :is-resizable="!preview"
+    :is-resizable="false"
   >
     <GridItem
       v-for="item in layout"
       :key="item.i"
-      :ref="(el: HTMLElement) => setItemRef(el, item)"
       :i="item.i"
       :x="item.x"
       :y="item.y"
       :w="item.w"
       :h="item.h"
-      :min-w="item.minW"
-      :min-h="item.minH"
     >
-      <div
-        v-if="item.config"
-        class="full-card_wrapper"
-        @mouseenter="hoverKey = item.i"
-        @mouseleave="hoverKey = ''"
-      >
+      <div class="full-card_wrapper">
+        <!-- :class="{ active: selectedId === item.i }" -->
         <a-card
           class="full-card"
-          :title="item.config.card.title"
-          :class="{ active: selectedId === item.i }"
-          @click.stop="selectWidget(item.i)"
+          :title="item.config.title"
+          @click.stop="select(item.i)"
         >
-          <template v-if="item.config.card.showSearch" #extra>
-            <render-extra v-model="item.config" />
+          <template v-if="item.config.showSearch" #extra>
+            <render-extra v-model="item.config" :item="item" />
           </template>
           <component :is="renderComponent(item)" :chart-config="item.config" />
         </a-card>
-        <div v-if="!preview && hoverKey === item.i" class="toolbar">
+        <div v-if="!preview" class="toolbar">
           <a-space :size="0">
             <template #split>
               <a-divider type="vertical" />
             </template>
             <a-tooltip title="删除" placement="bottom">
-              <a-typography-link type="secondary" @click="removeWidget(item.i)">
+              <a-typography-link type="secondary" @click="remove(item.i)">
                 <DeleteOutlined />
               </a-typography-link>
             </a-tooltip>
@@ -136,6 +111,13 @@ function renderComponent(item: ComponentItem) {
     border-bottom-left-radius: 8px;
     background-color: #fff;
     border: 1px solid #e8e8e8;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+  &:hover .toolbar {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 </style>

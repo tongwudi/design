@@ -1,15 +1,26 @@
-<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { Dayjs, OpUnitType } from 'dayjs'
 import dayjs from 'dayjs'
 
-const config = defineModel('modelValue', {
+defineProps<{
+  item: LayoutItem
+}>()
+
+const config = defineModel<DefaultConfig>('modelValue', {
   type: Object,
   default: () => ({}),
 })
 
+const selectValue = ref('')
 const searchValue = ref<[string, string] | [Dayjs, Dayjs]>()
 
+const options = [
+  { label: '天', value: 'DAY' },
+  { label: '周', value: 'WEEK' },
+  { label: '月', value: 'MONTH' },
+  { label: '季度', value: 'QUARTER' },
+  { label: '年', value: 'YEAR' },
+]
 const presets = [
   { label: '当天', value: [dayjs().startOf('day'), dayjs().endOf('day')] },
   { label: '本周', value: [dayjs().startOf('week'), dayjs().endOf('week')] },
@@ -18,18 +29,31 @@ const presets = [
   { label: '本年', value: [dayjs().startOf('year'), dayjs().endOf('year')] },
 ]
 
-async function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
+function handleSelectChange(value: any) {
+  config.value.selectParams = value
+}
+
+function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
   config.value.searchParams = value
 }
 </script>
 
 <template>
-  <a-range-picker
-    v-model:value="searchValue"
-    style="width: 200px;"
-    show-time
-    value-format="YYYY-MM-DD HH:mm:ss"
-    :presets="presets"
-    @change="handleChange"
-  />
+  <a-space>
+    <a-select
+      v-if="item.key === 'Lines' || item.key === 'bars'"
+      v-model:value="selectValue"
+      style="width: 100px;"
+      :options="options"
+      @change="handleSelectChange"
+    />
+    <a-range-picker
+      v-model:value="searchValue"
+      style="width: 200px;"
+      show-time
+      value-format="YYYY-MM-DD HH:mm:ss"
+      :presets="presets"
+      @change="handleChange"
+    />
+  </a-space>
 </template>

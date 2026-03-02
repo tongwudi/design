@@ -1,4 +1,3 @@
-<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { CascaderProps } from 'ant-design-vue'
 // import { designApis } from '@/apis/design'
@@ -27,7 +26,7 @@ const formConfig = computed({
 const metricOptions = ref<CascaderProps['options']>([])
 // function processOptions(options: any[]): CascaderProps['options'] {
 //   return options.map((item: any) => ({
-//     label: item.category,
+//     label: item.businessName || item.category,
 //     value: item.id || item.category,
 //     children: item.children ? processOptions(item.children) : undefined,
 //   }))
@@ -40,7 +39,7 @@ const metricOptions = ref<CascaderProps['options']>([])
 
 function handleMetricsChange(value: any[]) {
   if (value.length === 0) {
-    formConfig.value.card.showSearch = false
+    formConfig.value.showSearch = false
   }
 }
 </script>
@@ -53,24 +52,24 @@ function handleMetricsChange(value: any[]) {
   <div class="setting-box">
     <a-form layout="vertical" :model="formConfig">
       <!-- <template v-if="activeKey === 'card'"> -->
-      <a-form-item label="标题" name="card.title">
-        <a-input v-model:value="formConfig.card.title" />
+      <a-form-item label="标题" name="title">
+        <a-input v-model:value="formConfig.title" />
       </a-form-item>
-      <a-form-item label="指标列表" name="card.metrics">
+      <a-form-item label="指标列表" name="metrics">
         <a-cascader
-          v-model:value="formConfig.card.metrics"
+          v-model:value="formConfig.metrics"
           :options="metricOptions"
           :max-tag-count="1"
-          :multiple="formConfig.card.multiple ?? true"
+          :multiple="formConfig.multiple ?? true"
           show-checked-strategy="SHOW_CHILD"
           placeholder="请选择指标"
           @change="handleMetricsChange"
         />
       </a-form-item>
-      <template v-if="formConfig.card.showlordMetrics">
-        <a-form-item label="主指标" name="card.lordMetricsId">
+      <template v-if="formConfig.showlordMetrics">
+        <a-form-item label="主指标" name="lordMetricsId">
           <a-cascader
-            v-model:value="formConfig.card.lordMetricsId"
+            v-model:value="formConfig.lordMetricsId"
             :options="metricOptions"
             placeholder="请选择主指标"
           >
@@ -80,9 +79,9 @@ function handleMetricsChange(value: any[]) {
           </a-cascader>
         </a-form-item>
       </template>
-      <template v-if="formConfig.card.metrics?.length">
-        <a-form-item label="是否显示搜索框" name="card.showSearch">
-          <a-switch v-model:checked="formConfig.card.showSearch" />
+      <template v-if="formConfig.metrics?.length">
+        <a-form-item label="是否显示搜索框" name="showSearch">
+          <a-switch v-model:checked="formConfig.showSearch" />
         </a-form-item>
       </template>
       <!-- </template> -->

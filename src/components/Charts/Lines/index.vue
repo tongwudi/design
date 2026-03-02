@@ -26,8 +26,7 @@ async function initChart() {
   if (!chartRef.value) {
     return
   }
-  const { searchParams = [] } = props.chartConfig
-  const requestData = await fetchChartData(searchParams)
+  const requestData = await fetchChartData()
   if (chartInstance) {
     chartInstance.dispose()
   }

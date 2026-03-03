@@ -1,4 +1,4 @@
-// import { designApis } from '@/apis/design'
+// import { designApis } from '@/api/design'
 
 export function useChartData(config: DefaultConfig, chartType: string) {
   async function fetchChartData() {

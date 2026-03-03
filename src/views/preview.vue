@@ -2,30 +2,24 @@
 <script lang="ts" setup>
 import type { CSSProperties } from 'vue'
 import { message, Modal } from 'ant-design-vue'
-import { useDesignerStore } from '@/store'
 
 const contentStyle: CSSProperties = {
+  overflow: 'auto',
   backgroundColor: '#eee',
-  position: 'relative',
 }
 
-const route = useRoute()
+// const route = useRoute()
 const router = useRouter()
-const designerStore = useDesignerStore()
 
 const layout = ref([])
+
 const formState = ref<any>({})
 
-const showToolbar = ref(false)
+// const id = route.meta.menuId as string
 
-const id = route.meta.menuId as string
-
-onMounted(() => {
-  if (!id) {
-    layout.value = designerStore.getLayout()
-  }
-  // getTemplateDetail()
-})
+// onMounted(() => {
+//   getTemplateDetail()
+// })
 
 // async function getTemplateDetail() {
 //   const { data } = await designApis.getTemplateDetail({ params: { id } })
@@ -54,47 +48,56 @@ async function removeTemplate() {
 
 function editTemplate() {
   sessionStorage.setItem('TEMPLATE_ID', formState.value.id)
-  router.push({ name: 'Designer' })
+  setTimeout(() => {
+    router.push({ name: 'Designer' })
+  }, 100)
 }
 </script>
 
 <template>
-  <a-layout style="min-height: 100%">
-    <a-layout-content
-      :style="contentStyle"
-      @mouseenter="showToolbar = true"
-      @mouseleave="showToolbar = false"
-    >
+  <a-layout class="preview-layout">
+    <a-layout-content :style="contentStyle">
       <CenterGrid v-model="layout" preview />
-      <div v-if="id && showToolbar" class="toolbar">
-        <a-space :size="0">
-          <template #split>
-            <a-divider type="vertical" />
-          </template>
-          <a-tooltip title="删除" placement="bottom">
-            <a-typography-link type="secondary" @click="removeTemplate">
-              <DeleteOutlined />
-            </a-typography-link>
-          </a-tooltip>
-          <a-tooltip title="编辑" placement="bottom">
-            <a-typography-link type="secondary" @click="editTemplate">
-              <EditOutlined />
-            </a-typography-link>
-          </a-tooltip>
-        </a-space>
-      </div>
     </a-layout-content>
+    <div class="toolbar">
+      <a-space :size="0">
+        <template #split>
+          <a-divider type="vertical" />
+        </template>
+        <a-tooltip title="删除" placement="bottom">
+          <a-typography-link type="secondary" @click="removeTemplate">
+            <DeleteOutlined />
+          </a-typography-link>
+        </a-tooltip>
+        <a-tooltip title="编辑" placement="bottom">
+          <a-typography-link type="secondary" @click="editTemplate">
+            <EditOutlined />
+          </a-typography-link>
+        </a-tooltip>
+      </a-space>
+    </div>
   </a-layout>
 </template>
 
 <style scoped lang="less">
-.toolbar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 4px 8px;
-  border-bottom-left-radius: 8px;
-  background-color: #fff;
-  border: 1px solid #e8e8e8;
+.preview-layout {
+  height: 100%;
+  position: relative;
+  .toolbar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 8px;
+    border-bottom-left-radius: 8px;
+    background-color: #fff;
+    border: 1px solid #e8e8e8;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+  &:hover .toolbar {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 </style>

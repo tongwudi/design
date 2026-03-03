@@ -11,4 +11,4 @@ app.use(createPinia())
 app.mount('#app')
 
 // 给 window 添加自定义属性，需要扩展全局接口
-;(window as any).$vue = app
+window.$vue = app

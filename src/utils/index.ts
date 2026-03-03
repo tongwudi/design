@@ -6,8 +6,8 @@ const module: Record<string, { default: string }> = import.meta.glob('@/componen
  * 动态注册组件
  */
 export function componentInstall<T>(key: string, node: T) {
-  if (!(window as any).$vue.component(key) && node) {
-    (window as any).$vue.component(key, node)
+  if (!window.$vue.component(key) && node) {
+    window.$vue.component(key, node)
   }
 }
 

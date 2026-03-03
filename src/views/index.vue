@@ -1,8 +1,9 @@
 <!-- eslint-disable no-console -->
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 import { message, Modal } from 'ant-design-vue'
-// import { designApis } from '@/apis/design'
+// import { designApis } from '@/api/design'
 import { useDesignerStore } from '@/store'
 import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
 import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
@@ -140,7 +141,7 @@ function handleSelect(info: ComponentItem) {
   }
   const widget = {
     ...info,
-    i: String(new Date().getTime()),
+    i: uuidv4(),
     x: newX,
     y: newY,
   } as DragWidget
@@ -241,7 +242,11 @@ function removeWidget(id: string) {
 
     <CustomIndicatorModal v-model="showModal2" @submit="handleSubmit2" />
 
-    <SelectIndicatorModal v-model="showModal" :ccc="[ccc]" @select="handleSelect" />
+    <SelectIndicatorModal
+      v-model="showModal"
+      :ccc="[ccc]"
+      @select="handleSelect"
+    />
 
     <a-modal
       v-model:open="open"

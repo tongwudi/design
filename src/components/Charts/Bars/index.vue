@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-import { useChartData } from '@/hooks/use-chart-data'
+import { useChartData } from '@/hooks'
 
 const props = defineProps({
   chartConfig: {

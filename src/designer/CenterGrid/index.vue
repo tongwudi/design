@@ -1,13 +1,9 @@
-<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
 import { componentInstall, fetchChartComponent } from '@/utils'
+import { useDesignerStore } from '@/store'
 
 const props = defineProps({
-  gridConfig: {
-    type: Object,
-    default: () => ({}),
-  },
   preview: {
     type: Boolean,
     default: false,
@@ -25,6 +21,9 @@ const layout = defineModel('modelValue', {
   default: () => ({}),
 })
 
+const designerStore = useDesignerStore()
+const gridConfig = computed(() => designerStore.gridConfig)
+
 function select(id: string) {
   if (props.preview) {
     return
@@ -32,11 +31,11 @@ function select(id: string) {
   emit('select', id)
 }
 
-function remove(id: string | number) {
+function remove(id: string) {
   emit('remove', id)
 }
 
-function renderComponent(item: ComponentItem) {
+function getComponent(item: ComponentItem) {
   componentInstall(item.key, fetchChartComponent(item))
   return item.key
 }
@@ -47,7 +46,7 @@ function renderComponent(item: ComponentItem) {
     v-model:layout="layout"
     v-bind="gridConfig"
     :is-draggable="!preview"
-    :is-resizable="false"
+    :is-resizable="!preview"
   >
     <GridItem
       v-for="item in layout"
@@ -57,6 +56,9 @@ function renderComponent(item: ComponentItem) {
       :y="item.y"
       :w="item.w"
       :h="item.h"
+      :min-w="gridConfig.colNum / 3"
+      :min-h="gridConfig.colNum / 3"
+      :max-w="gridConfig.colNum"
     >
       <div class="full-card_wrapper">
         <!-- :class="{ active: selectedId === item.i }" -->
@@ -68,7 +70,7 @@ function renderComponent(item: ComponentItem) {
           <template v-if="item.config.showSearch" #extra>
             <render-extra v-model="item.config" :item="item" />
           </template>
-          <component :is="renderComponent(item)" :chart-config="item.config" />
+          <component :is="getComponent(item)" :chart-config="item.config" />
         </a-card>
         <div v-if="!preview" class="toolbar">
           <a-space :size="0">

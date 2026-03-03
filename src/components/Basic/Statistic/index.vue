@@ -1,6 +1,6 @@
 <!-- eslint-disable no-console -->
 <script lang="ts" setup>
-import { useChartData } from '@/hooks/use-chart-data'
+import { useChartData } from '@/hooks'
 
 const props = defineProps({
   chartConfig: {
@@ -19,8 +19,7 @@ const defaultData = {
 const statisticData = ref<{ title: string, count: number }>(defaultData)
 
 async function initChart() {
-  const { searchParams = [] } = props.chartConfig
-  const requestData = await fetchChartData(searchParams)
+  const requestData = await fetchChartData()
   statisticData.value = requestData || defaultData
 }
 

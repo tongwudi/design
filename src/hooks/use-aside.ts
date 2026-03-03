@@ -1,8 +1,6 @@
-import { useDesignerStore } from '@/store'
+import { componentsList } from '@/components/index'
 
 export function useAsideHook() {
-  const designerStore = useDesignerStore()
-
   const packagesListObj: Record<string, string> = {
     Basic: '基础',
     Charts: '图表',
@@ -11,10 +9,11 @@ export function useAsideHook() {
   const menuOptions = []
 
   ;(function () {
-    for (const key in designerStore.getComponentList) {
+    for (const key in componentsList) {
       menuOptions.push({
         name: packagesListObj[key],
-        children: designerStore.getComponentList[key],
+        key,
+        children: componentsList[key],
       })
     }
   })()

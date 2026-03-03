@@ -3,8 +3,9 @@
 import type { CSSProperties } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 // import { designApis } from '@/apis/design'
-import { useAsideHook } from '@/hooks'
 import { useDesignerStore } from '@/store'
+import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
+import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
 
 const headerStyle: CSSProperties = {
   height: 'var(--header-height)',
@@ -16,9 +17,9 @@ const headerStyle: CSSProperties = {
 
 const contentStyle: CSSProperties = {
   overflow: 'auto',
-  backgroundColor: '#eee',
   borderLeft: '1px solid rgba(5, 5, 5, 0.06)',
   borderRight: '1px solid rgba(5, 5, 5, 0.06)',
+  backgroundColor: '#f4f6fc',
 }
 
 const designerStore = useDesignerStore()
@@ -32,9 +33,8 @@ const selectedWidgetId = computed(() => designerStore.selectedWidgetId)
 
 const menuTitle = ref('')
 
-const { menuOptions } = useAsideHook()
+const showModal2 = ref(false)
 const showModal = ref(false)
-const selectedWidget = ref({} as DragWidget)
 
 const id = ref(sessionStorage.getItem('TEMPLATE_ID') || '')
 const open = ref(false)
@@ -53,6 +53,11 @@ const btns: any = computed(() => [
     isDanger: true,
     show: menuTitle.value,
     clickFn: close,
+  },
+  {
+    title: '自定义指标卡',
+    icon: 'PlusOutlined',
+    clickFn: custom,
   },
   {
     title: '选择指标卡',
@@ -82,6 +87,10 @@ async function getData() {
   // menuTitle.value = data.title
 }
 
+function handleSubmit2(widget: DragWidget) {
+  localStorage.setItem('widget', JSON.stringify(widget))
+}
+
 function onClose() {
   sessionStorage.removeItem('TEMPLATE_ID')
   designerStore.clearAllLayout()
@@ -103,16 +112,17 @@ function close() {
   })
 }
 
+function custom() {
+  showModal2.value = true
+}
+
+const ccc = ref<Partial<LayoutItem>>({})
 function select() {
+  ccc.value = JSON.parse(localStorage.getItem('widget') || '{}')
   showModal.value = true
 }
 
-function handleClick(component: any) {
-  selectedWidget.value = component
-}
-
-function handleSelect() {
-  showModal.value = false
+function handleSelect(info: ComponentItem) {
   const lastItem = layout.value[layout.value.length - 1] || {
     x: 0,
     y: 0,
@@ -121,7 +131,7 @@ function handleSelect() {
   }
   const curRowUsedWidth = lastItem.x + lastItem.w
   let newX, newY
-  if (curRowUsedWidth + selectedWidget.value.w <= gridConfig.value.colNum) {
+  if (curRowUsedWidth + info.w <= gridConfig.value.colNum) {
     newX = curRowUsedWidth
     newY = lastItem.y
   } else {
@@ -129,20 +139,12 @@ function handleSelect() {
     newY = lastItem.y + lastItem.h
   }
   const widget = {
-    ...selectedWidget.value,
+    ...info,
     i: String(new Date().getTime()),
     x: newX,
     y: newY,
-    config: {
-      card: {},
-    },
-  }
+  } as DragWidget
   designerStore.addWidget(widget)
-  handleCancel()
-}
-
-function handleCancel() {
-  selectedWidget.value = {} as DragWidget
 }
 
 function clearAll() {
@@ -218,7 +220,7 @@ function removeWidget(id: string) {
         <HeaderBar :title="menuTitle" :btns="btns" />
       </a-layout-header>
       <a-layout>
-        <a-layout-content id="grid-layout" :style="contentStyle">
+        <a-layout-content :style="contentStyle">
           <div v-if="layout.length === 0" class="empty">
             <a-empty
               style="color: #2aa198"
@@ -229,7 +231,6 @@ function removeWidget(id: string) {
           <CenterGrid
             v-else
             v-model="layout"
-            :grid-config="gridConfig"
             :selected-id="selectedWidgetId"
             @select="selectWidget"
             @remove="removeWidget"
@@ -238,32 +239,9 @@ function removeWidget(id: string) {
       </a-layout>
     </a-layout>
 
-    <a-modal
-      v-model:open="showModal"
-      title="选择指标卡"
-      @ok="handleSelect"
-      @cancel="handleCancel"
-    >
-      <div class="components-list">
-        <template v-for="item in menuOptions" :key="item.name">
-          <div v-if="item.name" class="widget-cate">
-            {{ item.name }}
-          </div>
-          <ul class="widget-list">
-            <template v-for="component in item.children" :key="component.name">
-              <li
-                class="widget-item"
-                :class="{ active: selectedWidget?.name === component.name }"
-                :title="component.name"
-                @click="handleClick(component)"
-              >
-                {{ component.name }}
-              </li>
-            </template>
-          </ul>
-        </template>
-      </div>
-    </a-modal>
+    <CustomIndicatorModal v-model="showModal2" @submit="handleSubmit2" />
+
+    <SelectIndicatorModal v-model="showModal" :ccc="[ccc]" @select="handleSelect" />
 
     <a-modal
       v-model:open="open"
@@ -300,37 +278,6 @@ function removeWidget(id: string) {
   }
   &-description {
     color: #2aa198;
-  }
-}
-
-.components-list {
-  padding: 4px 0;
-  .widget-cate {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  .widget-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 12px 10px;
-    .widget-item {
-      width: calc(50% - 4px);
-      line-height: 84px;
-      font-size: 12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      text-align: center;
-      color: #333;
-      border: 1px solid #f4f6fc;
-      background-color: #f4f6fc;
-      // cursor: move;
-      &.active {
-        color: #1890ff;
-        border: 1px dashed #1890ff;
-      }
-    }
   }
 }
 </style>

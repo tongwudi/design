@@ -20,12 +20,7 @@ declare interface DragWidget extends ComponentItem {
 //   dataPath?: string
 // }
 
-declare interface DefaultCard<T = any> {
-  [key: string]: T
-}
-
 declare interface DefaultConfig {
-  card: DefaultCard
   [key: string]: any
 }
 

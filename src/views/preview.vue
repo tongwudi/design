@@ -13,8 +13,6 @@ const route = useRoute()
 const router = useRouter()
 const designerStore = useDesignerStore()
 
-const gridConfig = computed(() => designerStore.gridConfig)
-
 const layout = ref([])
 const formState = ref<any>({})
 
@@ -67,7 +65,7 @@ function editTemplate() {
       @mouseenter="showToolbar = true"
       @mouseleave="showToolbar = false"
     >
-      <CenterGrid v-model="layout" :grid-config="gridConfig" preview />
+      <CenterGrid v-model="layout" preview />
       <div v-if="id && showToolbar" class="toolbar">
         <a-space :size="0">
           <template #split>

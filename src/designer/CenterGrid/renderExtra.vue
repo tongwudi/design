@@ -39,11 +39,12 @@ function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
 </script>
 
 <template>
-  <a-space>
+  <a-flex gap="small">
     <a-select
-      v-if="item.key === 'Lines' || item.key === 'bars'"
+      v-if="item.key === 'Lines' || item.key === 'Bars'"
       v-model:value="selectValue"
-      style="width: 100px;"
+      style="width: 85px;"
+      allow-clear
       :options="options"
       @change="handleSelectChange"
     />
@@ -55,5 +56,5 @@ function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
       :presets="presets"
       @change="handleChange"
     />
-  </a-space>
+  </a-flex>
 </template>

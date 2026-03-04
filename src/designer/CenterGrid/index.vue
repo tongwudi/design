@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
-import { componentInstall, fetchChartComponent } from '@/utils'
+import { componentInstall  } from '@/utils'
+import { fetchChartComponent } from '@/components'
 import { useDesignerStore } from '@/store'
 
 const props = defineProps({

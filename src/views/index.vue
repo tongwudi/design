@@ -6,7 +6,8 @@ import { message, Modal } from 'ant-design-vue'
 // import { designApis } from '@/api/design'
 import { useDesignerStore } from '@/store'
 import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
-import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
+// import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
+import SaveModal from '@/views/components/saveModal.vue'
 
 const headerStyle: CSSProperties = {
   height: 'var(--header-height)',
@@ -30,22 +31,18 @@ const layout = computed({
   set: newLayout => designerStore.updateLayout(newLayout),
 })
 const gridConfig = computed(() => designerStore.gridConfig)
-const selectedWidgetId = computed(() => designerStore.selectedWidgetId)
+const selectedId = computed(() => designerStore.selectedId)
 
-const menuTitle = ref('')
+const id = ref(sessionStorage.getItem('TEMPLATE_ID') || '')
 
 const showModal2 = ref(false)
 const showModal = ref(false)
 
-const id = ref(sessionStorage.getItem('TEMPLATE_ID') || '')
 const open = ref(false)
 const loading = ref(false)
 const title = computed(() => (id.value ? '更新模板' : '保存模板'))
 const formState = ref<Record<string, string>>({})
-const rules = reactive({
-  category: [{ required: true, message: '请输入菜单分组' }],
-  title: [{ required: true, message: '请输入菜单标题' }],
-})
+const menuTitle = ref('')
 
 const btns: any = computed(() => [
   {
@@ -88,7 +85,7 @@ async function getData() {
   // menuTitle.value = data.title
 }
 
-function handleSubmit2(widget: DragWidget) {
+function handleSubmit2(widget: LayoutItem) {
   localStorage.setItem('widget', JSON.stringify(widget))
 }
 
@@ -123,7 +120,7 @@ function select() {
   showModal.value = true
 }
 
-function handleSelect(info: ComponentItem) {
+function handleConfirm(item: LayoutItem) {
   const lastItem = layout.value[layout.value.length - 1] || {
     x: 0,
     y: 0,
@@ -132,20 +129,20 @@ function handleSelect(info: ComponentItem) {
   }
   const curRowUsedWidth = lastItem.x + lastItem.w
   let newX, newY
-  if (curRowUsedWidth + info.w <= gridConfig.value.colNum) {
+  if (curRowUsedWidth + item.w <= gridConfig.value.colNum) {
     newX = curRowUsedWidth
     newY = lastItem.y
   } else {
     newX = 0
     newY = lastItem.y + lastItem.h
   }
-  const widget = {
-    ...info,
+  const component = {
+    ...item,
     i: uuidv4(),
     x: newX,
     y: newY,
-  } as DragWidget
-  designerStore.addWidget(widget)
+  }
+  designerStore.addWidget(component)
 }
 
 function clearAll() {
@@ -197,7 +194,7 @@ async function handleSubmit() {
 }
 
 function selectWidget(id: string) {
-  designerStore.setSelectedWidgetId(id)
+  designerStore.setSelectedId(id)
 }
 
 function removeWidget(id: string) {
@@ -232,7 +229,7 @@ function removeWidget(id: string) {
           <CenterGrid
             v-else
             v-model="layout"
-            :selected-id="selectedWidgetId"
+            :selected-id="selectedId"
             @select="selectWidget"
             @remove="removeWidget"
           />
@@ -240,29 +237,21 @@ function removeWidget(id: string) {
       </a-layout>
     </a-layout>
 
-    <CustomIndicatorModal v-model="showModal2" @submit="handleSubmit2" />
+    <!-- <CustomIndicatorModal v-model="showModal2" @submit="handleSubmit2" /> -->
 
     <SelectIndicatorModal
       v-model="showModal"
       :ccc="[ccc]"
-      @select="handleSelect"
+      @confirm="handleConfirm"
     />
 
-    <a-modal
-      v-model:open="open"
+    <SaveModal
+      v-model="open"
+      v-model:form-state="formState"
       :title="title"
       :confirm-loading="loading"
-      @ok="handleSubmit"
-    >
-      <a-form :model="formState" :rules="rules">
-        <a-form-item label="菜单分组" name="category">
-          <a-input v-model:value="formState.category" />
-        </a-form-item>
-        <a-form-item label="菜单标题" name="title">
-          <a-input v-model:value="formState.title" />
-        </a-form-item>
-      </a-form>
-    </a-modal>
+      @submit="handleSubmit"
+    />
   </div>
 </template>
 

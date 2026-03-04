@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { useDesignerStore } from '@/store'
+import { useAsideHook } from '@/hooks'
+import { createComponent } from '@/components'
 
 defineProps({
   ccc: {
@@ -8,28 +10,32 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['confirm'])
 
 const visible = defineModel('modelValue', {
-  default: false,
   type: Boolean,
+  default: false,
 })
+
+const { menuOptions } = useAsideHook()
 
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
-const selectedWidget = ref<Partial<DragWidget>>({})
+const selectedWidget = ref<Partial<LayoutItem>>({})
 
-function handleClick(widget: ComponentItem) {
-  selectedWidget.value = { ...widget }
+async function handleClick(item: ComponentItem) {
+  const newComponent = await createComponent(item)
+  const { chart, config } = newComponent
+  selectedWidget.value = { ...item, ...chart, config }
 }
 
 function handleChange(w: number) {
   selectedWidget.value.w = w
 }
 
-function handleSelect() {
-  emit('select', selectedWidget.value)
+function handleConfirm() {
+  emit('confirm', selectedWidget.value)
   handleCancel()
 }
 
@@ -42,25 +48,25 @@ const handleCancel = () => {
 <template>
   <a-modal v-model:open="visible" title="选择指标卡" @cancel="handleCancel">
     <div class="components">
-      <template v-for="item in ccc" :key="item.name">
-        <div class="components-cate" @click="handleClick(item)">
+      <template v-for="item in menuOptions" :key="item.name">
+        <!-- <div class="components-cate" @click="handleClick(item)">
           {{ item.name }}
-        </div>
-        <!-- <div class="components-cate">
+        </div> -->
+        <div class="components-cate">
           {{ item.name }}
         </div>
         <ul class="components-list">
-          <template v-for="widget in item.children" :key="widget.name">
+          <template v-for="widget in item.list" :key="widget.key">
             <li
               class="components-item"
-              :class="{ active: selectedWidget.name === widget.name }"
-              :title="widget.name"
+              :class="{ active: selectedWidget.key === widget.key }"
+              :title="widget.title"
               @click="handleClick(widget)"
             >
-              {{ widget.name }}
+              {{ widget.title }}
             </li>
           </template>
-        </ul> -->
+        </ul>
       </template>
     </div>
     <template #footer>
@@ -85,7 +91,7 @@ const handleCancel = () => {
           <a-button
             type="primary"
             :disabled="Object.keys(selectedWidget).length === 0"
-            @click="handleSelect"
+            @click="handleConfirm"
           >
             确定
           </a-button>

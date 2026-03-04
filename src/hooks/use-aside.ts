@@ -1,19 +1,22 @@
-import { componentsList } from '@/components/index'
+import { packagesList, componentsList } from '@/components/index'
+
+export type MenuOptionsType = {
+  key: string
+  name: string
+  list: ComponentItem[]
+}
 
 export function useAsideHook() {
-  const packagesListObj: Record<string, string> = {
-    Basic: '基础',
-    Charts: '图表',
-  }
-
-  const menuOptions = []
+  const menuOptions: MenuOptionsType[] = []
 
   ;(function () {
     for (const key in componentsList) {
       menuOptions.push({
-        name: packagesListObj[key],
         key,
-        children: componentsList[key],
+        // @ts-ignore
+        name: packagesList[key],
+        // @ts-ignore
+        list: componentsList[key],
       })
     }
   })()

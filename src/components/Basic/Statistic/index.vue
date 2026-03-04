@@ -16,7 +16,7 @@ const defaultData = {
   count: 0,
 }
 
-const statisticData = ref<{ title: string, count: number }>(defaultData)
+const statisticData = ref<{ title: string; count: number }>(defaultData)
 
 async function initChart() {
   const requestData = await fetchChartData()
@@ -25,7 +25,7 @@ async function initChart() {
 
 watch(
   () => props.chartConfig.searchParams,
-  async (newValue) => {
+  async newValue => {
     if (!newValue) {
       return
     }
@@ -35,20 +35,19 @@ watch(
 )
 
 onMounted(() => {
-  setTimeout(initChart, 200)
+  setTimeout(initChart, 100)
 })
 </script>
 
 <template>
-  <a-statistic
-    :title="statisticData.title"
-    :value="statisticData.count"
-    :precision="2"
-    suffix="%"
-    :value-style="{ color: '#cf1322' }"
-  >
-    <template #prefix>
-      <arrow-down-outlined />
-    </template>
-  </a-statistic>
+  <a-statistic :title="statisticData.title" :value="statisticData.count" />
 </template>
+
+<style lang="less" scoped>
+.ant-statistic {
+  line-height: 1.2;
+  :deep(&-content) {
+    font-size: 22px;
+  }
+}
+</style>

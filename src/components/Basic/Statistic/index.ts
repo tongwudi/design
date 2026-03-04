@@ -1,11 +1,9 @@
 export const StatisticConfig: ComponentItem = {
-  name: '统计数值',
-  category: 'Basic',
+  category: '',
+  categoryName: '',
   key: 'Statistic',
-  w: 4,
-  h: 4,
-  minW: 4,
-  minH: 4,
+  title: '统计数值',
+  package: 'Basic',
 }
 
 export const StatisticCardConfig = {

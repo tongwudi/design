@@ -1,11 +1,4 @@
-export const PieConfig: ComponentItem = {
-  name: '饼图',
-  category: 'Charts',
-  key: 'Pies',
-  w: 12,
-  h: 8,
-}
+import { PieCommonConfig } from './PieCommon/index'
+import { RoseConfig } from './Rose/index'
 
-export const PieCardConfig = {
-  showlordMetrics: true,
-}
+export default [PieCommonConfig, RoseConfig]

@@ -1,11 +1,3 @@
-export const LineConfig: ComponentItem = {
-  name: '折线图',
-  category: 'Charts',
-  key: 'Lines',
-  w: 12,
-  h: 8,
-}
+import { LineCommonConfig } from './LineCommon/index'
 
-export const LineCardConfig = {
-  showlordMetrics: false,
-}
+export default [LineCommonConfig]

@@ -1,11 +1,3 @@
-export const BarConfig: ComponentItem = {
-  name: '柱状图',
-  category: 'Charts',
-  key: 'Bars',
-  w: 12,
-  h: 8,
-}
+import { BarCommonConfig } from './BarCommon/index'
 
-export const BarCardConfig = {
-  showlordMetrics: false,
-}
+export default [BarCommonConfig]

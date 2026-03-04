@@ -1,11 +1,18 @@
-import { BarCardConfig, BarConfig } from './Bars/index'
-import { LineCardConfig, LineConfig } from './Lines/index'
-import { PieCardConfig, PieConfig } from './Pies/index'
+// import { BarConfig, BarCardConfig } from './Bar/index'
+// import { LineConfig, LineCardConfig } from './Line/index'
+// import { PieConfig, PieCardConfig } from './Pie/index'
+// import { RoseConfig, RoseCardConfig } from './Rose/index'
 
-export const ChartsList: ComponentItem[] = [BarConfig, LineConfig, PieConfig]
+// export const ChartsList: ComponentItem[] = [BarConfig, LineConfig, PieConfig, RoseConfig]
 
-export const ChartsConfig = {
-  Bars: BarCardConfig,
-  Lines: LineCardConfig,
-  Pies: PieCardConfig,
-}
+// export const ChartsConfig = {
+//   Bar: BarCardConfig,
+//   Line: LineCardConfig,
+//   Pie: PieCardConfig,
+//   Rose: RoseCardConfig,
+// }
+import Bars from './Bars'
+import Lines from './Lines'
+import Pies from './Pies'
+
+export const ChartsList = [...Bars, ...Lines, ...Pies]

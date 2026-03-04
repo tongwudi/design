@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { CascaderProps } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import { useAsideHook } from '@/hooks'
-import dataJson from '../111.json'
-import { cardConfig } from '@/components/index'
+// import { useAsideHook } from '@/hooks'
+import dataJson from '../data.json'
+// import { cardConfig } from '@/components/index'
 
 const visible = defineModel('modelValue', {
   type: Boolean,
@@ -12,7 +12,7 @@ const visible = defineModel('modelValue', {
 
 const emit = defineEmits(['submit'])
 
-const { menuOptions } = useAsideHook()
+// const { menuOptions } = useAsideHook()
 
 const formRef = ref()
 const formConfig = ref<Partial<DefaultConfig>>({})
@@ -38,20 +38,20 @@ function processOptions(options: any[]): CascaderProps['options'] {
   }))
 }
 
-const handleChangeType: CascaderProps['onChange'] = (
-  _value,
-  selectedOptions,
-) => {
-  const { category, key } = selectedOptions[1] as ComponentItem
-  formConfig.value = {
-    ...formConfig.value,
-    ...cardConfig?.[category]?.[key],
-  }
-  widgetConfig.value = {
-    ...selectedOptions[1],
-    config: {},
-  }
-}
+// const handleChangeType: CascaderProps['onChange'] = (
+//   _value,
+//   selectedOptions,
+// ) => {
+//   const { category, key } = selectedOptions[1] as ComponentItem
+//   formConfig.value = {
+//     ...formConfig.value,
+//     ...cardConfig?.[category]?.[key],
+//   }
+//   widgetConfig.value = {
+//     ...selectedOptions[1],
+//     config: {},
+//   }
+// }
 
 async function handleSubmit() {
   try {
@@ -79,14 +79,14 @@ function handleCancel() {
     @cancel="handleCancel"
   >
     <a-form ref="formRef" layout="vertical" :model="formConfig" :rules="rules">
-      <a-form-item label="选择模板" name="template">
+      <!-- <a-form-item label="选择模板" name="template">
         <a-cascader
           v-model:value="formConfig.template"
           :options="menuOptions"
           :field-names="{ label: 'name', value: 'key', children: 'children' }"
           @change="handleChangeType"
         />
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="指标卡标题" name="title">
         <a-input v-model:value="formConfig.title" />
       </a-form-item>

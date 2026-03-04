@@ -41,7 +41,7 @@ function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
 <template>
   <a-flex gap="small">
     <a-select
-      v-if="item.key === 'Lines' || item.key === 'Bars'"
+      v-if="item.key === 'Line' || item.key === 'Bar'"
       v-model:value="selectValue"
       style="width: 85px;"
       allow-clear

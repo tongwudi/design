@@ -8,24 +8,24 @@ export const useDesignerStore = defineStore('designer', {
       rowHeight: 30,
       margin: [10, 10],
     },
-    selectedWidgetId: '',
+    selectedId: '',
   }),
   actions: {
-    addWidget(widget: DragWidget) {
-      this.layout.push(widget as LayoutItem)
+    addWidget(component: LayoutItem) {
+      this.layout.push(component)
     },
     removeWidget(id: string) {
       this.layout = this.layout.filter(obj => obj.i !== id)
-      if (this.selectedWidgetId === id) {
-        this.selectedWidgetId = ''
+      if (this.selectedId === id) {
+        this.selectedId = ''
       }
     },
-    setSelectedWidgetId(id: string) {
-      this.selectedWidgetId = id
+    setSelectedId(id: string) {
+      this.selectedId = id
     },
     clearAllLayout() {
       this.layout = []
-      this.selectedWidgetId = ''
+      this.selectedId = ''
     },
     updateLayout(newLayout: LayoutItem[]) {
       this.layout = newLayout

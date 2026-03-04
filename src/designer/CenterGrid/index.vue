@@ -56,8 +56,8 @@ function getComponent(item: ComponentItem) {
       :y="item.y"
       :w="item.w"
       :h="item.h"
-      :min-w="gridConfig.colNum / 3"
-      :min-h="gridConfig.colNum / 3"
+      :min-w="item.minW || gridConfig.colNum / 4"
+      :min-h="item.minH || gridConfig.colNum / 4"
       :max-w="gridConfig.colNum"
     >
       <div class="full-card_wrapper">

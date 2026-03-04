@@ -4,6 +4,8 @@ export const StatisticConfig: ComponentItem = {
   key: 'Statistic',
   w: 4,
   h: 4,
+  minW: 4,
+  minH: 4,
 }
 
 export const StatisticCardConfig = {

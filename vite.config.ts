@@ -9,15 +9,14 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true,
+  },
   plugins: [
     vue(),
     unocss(),
     AutoImport({
-      imports: [
-        'vue',
-        'vue-router',
-        '@vueuse/core',
-      ],
+      imports: ['vue', 'vue-router', '@vueuse/core'],
       dts: 'types/auto-imports.d.ts',
     }) as PluginOption,
     Components({
@@ -27,10 +26,7 @@ export default defineConfig({
           resolveIcons: true,
         }),
       ],
-      dirs: [
-        'src/components',
-        'src/designer',
-      ],
+      dirs: ['src/components', 'src/designer'],
       dts: 'types/components.d.ts',
     }) as PluginOption,
   ],

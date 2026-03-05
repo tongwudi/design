@@ -23,6 +23,20 @@ export const useDesignerStore = defineStore('designer', {
     setSelectedId(id: string) {
       this.selectedId = id
     },
+    getSelectedConfig(id: string) {
+      const selectedWidget = this.layout.find(obj => obj.i === id)
+      if (!selectedWidget) {
+        return
+      }
+      return selectedWidget.config
+    },
+    updateSelectedConfig(id: string, newConfig: DefaultConfig) {
+      const index = this.layout.findIndex(obj => obj.i === id)
+      if (index === -1) {
+        return
+      }
+      this.layout[index]!.config = { ...newConfig }
+    },
     clearAllLayout() {
       this.layout = []
       this.selectedId = ''

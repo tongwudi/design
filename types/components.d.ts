@@ -53,6 +53,7 @@ declare module 'vue' {
     Rose: typeof import('./../src/components/Charts/Pies/Rose/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingOutlined: typeof import('@ant-design/icons-vue')['SettingOutlined']
     SettingTitle: typeof import('./../src/components/SettingTitle/index.vue')['default']
     Statistic: typeof import('./../src/components/Basic/Statistic/index.vue')['default']
   }

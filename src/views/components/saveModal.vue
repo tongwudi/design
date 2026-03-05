@@ -1,16 +1,21 @@
 <script lang="ts" setup>
 import type { Rule } from 'ant-design-vue/es/form'
 
+const props = defineProps({
+  record: {
+    type: Object,
+    default: () => {},
+  },
+})
+
 const visible = defineModel('modelValue', {
   type: Boolean,
   default: false,
 })
-const formState = defineModel('formState', {
-  type: Object,
-  default: () => {},
-})
 
 const emit = defineEmits(['submit'])
+
+const formState = computed(() => props.record)
 
 const formRef = ref()
 const rules: Record<string, Rule[]> = {
@@ -21,7 +26,7 @@ const rules: Record<string, Rule[]> = {
 async function handleSubmit() {
   try {
     await formRef.value.validate()
-    emit('submit')
+    emit('submit', formState.value)
   } catch (error) {
     console.log(error)
   }

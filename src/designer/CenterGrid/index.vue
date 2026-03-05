@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
-import { componentInstall  } from '@/utils'
+import { componentInstall } from '@/utils'
 import { fetchChartComponent } from '@/components'
 import { useDesignerStore } from '@/store'
 
@@ -15,7 +15,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['select', 'remove'])
+const emit = defineEmits(['setting', 'remove'])
 
 const layout = defineModel('modelValue', {
   type: Object,
@@ -25,11 +25,8 @@ const layout = defineModel('modelValue', {
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
-function select(id: string) {
-  if (props.preview) {
-    return
-  }
-  emit('select', id)
+function setting(id: string) {
+  emit('setting', id)
 }
 
 function remove(id: string) {
@@ -58,15 +55,14 @@ function getComponent(item: ComponentItem) {
       :w="item.w"
       :h="item.h"
       :min-w="item.minW || gridConfig.colNum / 4"
-      :min-h="item.minH || gridConfig.colNum / 4"
+      :min-h="item.minH || gridConfig.colNum / 3"
       :max-w="gridConfig.colNum"
     >
       <div class="full-card_wrapper">
-        <!-- :class="{ active: selectedId === item.i }" -->
         <a-card
           class="full-card"
+          :class="{ active: selectedId === item.i }"
           :title="item.config.title"
-          @click.stop="select(item.i)"
         >
           <template v-if="item.config.showSearch" #extra>
             <render-extra v-model="item.config" :item="item" />
@@ -78,6 +74,11 @@ function getComponent(item: ComponentItem) {
             <template #split>
               <a-divider type="vertical" />
             </template>
+            <a-tooltip title="配置" placement="bottom">
+              <a-typography-link type="secondary" @click="setting(item)">
+                <SettingOutlined />
+              </a-typography-link>
+            </a-tooltip>
             <a-tooltip title="删除" placement="bottom">
               <a-typography-link type="secondary" @click="remove(item.i)">
                 <DeleteOutlined />

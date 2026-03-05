@@ -3,13 +3,6 @@ import { useDesignerStore } from '@/store'
 import { useAsideHook } from '@/hooks'
 import { createComponent } from '@/components'
 
-defineProps({
-  ccc: {
-    type: Array as any,
-    default: () => [],
-  },
-})
-
 const emit = defineEmits(['confirm'])
 
 const visible = defineModel('modelValue', {
@@ -24,6 +17,12 @@ const gridConfig = computed(() => designerStore.gridConfig)
 
 const selectedWidget = ref<Partial<LayoutItem>>({})
 
+watch(visible, newVal => {
+  if (!newVal) {
+    selectedWidget.value = {}
+  }
+})
+
 async function handleClick(item: ComponentItem) {
   const newComponent = await createComponent(item)
   const { chart, config } = newComponent
@@ -36,11 +35,9 @@ function handleChange(w: number) {
 
 function handleConfirm() {
   emit('confirm', selectedWidget.value)
-  handleCancel()
 }
 
 const handleCancel = () => {
-  selectedWidget.value = {}
   visible.value = false
 }
 </script>
@@ -49,9 +46,6 @@ const handleCancel = () => {
   <a-modal v-model:open="visible" title="选择指标卡" @cancel="handleCancel">
     <div class="components">
       <template v-for="item in menuOptions" :key="item.name">
-        <!-- <div class="components-cate" @click="handleClick(item)">
-          {{ item.name }}
-        </div> -->
         <div class="components-cate">
           {{ item.name }}
         </div>
@@ -75,7 +69,7 @@ const handleCancel = () => {
           <template #split>
             <a-divider type="vertical" />
           </template>
-          <template v-for="i in [3, 2, 1]" :key="i">
+          <template v-for="i in [4, 3, 2, 1]" :key="i">
             <a-typography-link
               type="secondary"
               :disabled="selectedWidget.w === gridConfig.colNum / i"

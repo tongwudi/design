@@ -6,7 +6,7 @@ export const RoseCommonChartConfig = {
 }
 
 export const RoseCommonCardConfig = {
-  showlordMetrics: false,
+  showlordMetrics: true,
 }
 
 export default class Config {

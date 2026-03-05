@@ -1,21 +1,32 @@
 <script lang="ts" setup>
 import type { CascaderProps } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-// import { useAsideHook } from '@/hooks'
+import { useDesignerStore } from '@/store'
 import dataJson from '../data.json'
-// import { cardConfig } from '@/components/index'
+
+const props = defineProps({
+  record: {
+    type: Object as () => DefaultConfig,
+    default: () => {},
+  },
+})
 
 const visible = defineModel('modelValue', {
   type: Boolean,
   default: false,
 })
+// const formConfig = defineModel('formConfig', {
+//   type: Object as () => DefaultConfig,
+//   default: () => {},
+// })
 
 const emit = defineEmits(['submit'])
 
-// const { menuOptions } = useAsideHook()
+const designerStore = useDesignerStore()
+
+const formConfig = computed(() => props.record)
 
 const formRef = ref()
-const formConfig = ref<Partial<DefaultConfig>>({})
 const rules: Record<string, Rule[]> = {
   template: [
     {
@@ -26,8 +37,6 @@ const rules: Record<string, Rule[]> = {
     },
   ],
 }
-const widgetConfig = ref<Partial<LayoutItem>>({})
-
 const metricOptions = processOptions(dataJson)
 
 function processOptions(options: any[]): CascaderProps['options'] {
@@ -38,27 +47,11 @@ function processOptions(options: any[]): CascaderProps['options'] {
   }))
 }
 
-// const handleChangeType: CascaderProps['onChange'] = (
-//   _value,
-//   selectedOptions,
-// ) => {
-//   const { category, key } = selectedOptions[1] as ComponentItem
-//   formConfig.value = {
-//     ...formConfig.value,
-//     ...cardConfig?.[category]?.[key],
-//   }
-//   widgetConfig.value = {
-//     ...selectedOptions[1],
-//     config: {},
-//   }
-// }
-
 async function handleSubmit() {
   try {
     await formRef.value.validate()
-    const { template, ...rest } = formConfig.value
-    widgetConfig.value.config = { ...rest }
-    emit('submit', widgetConfig.value)
+    const { template, ...config } = formConfig.value
+    emit('submit', config)
     handleCancel()
   } catch (error) {
     console.log(error)
@@ -68,25 +61,18 @@ async function handleSubmit() {
 function handleCancel() {
   visible.value = false
   formRef.value.resetFields()
+  designerStore.setSelectedId('')
 }
 </script>
 
 <template>
   <a-modal
     v-model:open="visible"
-    title="自定义指标卡"
+    title="自定义指标卡2"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >
     <a-form ref="formRef" layout="vertical" :model="formConfig" :rules="rules">
-      <!-- <a-form-item label="选择模板" name="template">
-        <a-cascader
-          v-model:value="formConfig.template"
-          :options="menuOptions"
-          :field-names="{ label: 'name', value: 'key', children: 'children' }"
-          @change="handleChangeType"
-        />
-      </a-form-item> -->
       <a-form-item label="指标卡标题" name="title">
         <a-input v-model:value="formConfig.title" />
       </a-form-item>

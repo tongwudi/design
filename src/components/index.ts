@@ -33,7 +33,7 @@ const loadConfig = (packageName: string, categoryName: string, keyName: string) 
   const key = packageName + categoryName + keyName
   if (!componentCacheMap.has(key)) {
     const configModule = `./${packageName}/${categoryName ? categoryName + '/' : ''}${keyName}/config.ts`
-    componentCacheMap.set(key, import(configModule))
+    componentCacheMap.set(key, import(/* @vite-ignore */ configModule))
   }
   return componentCacheMap.get(key)
 }

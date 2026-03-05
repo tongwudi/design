@@ -6,7 +6,7 @@ export const PieCommonChartConfig = {
 }
 
 export const PieCommonCardConfig = {
-  showlordMetrics: false,
+  showlordMetrics: true,
 }
 
 export default class Config {

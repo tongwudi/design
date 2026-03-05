@@ -3,10 +3,10 @@
 import type { CSSProperties } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { message, Modal } from 'ant-design-vue'
-// import { designApis } from '@/api/design'
+// import { designApis } from '@/api/designer'
 import { useDesignerStore } from '@/store'
 import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
-// import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
+import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
 import SaveModal from '@/views/components/saveModal.vue'
 
 const headerStyle: CSSProperties = {
@@ -43,6 +43,7 @@ const loading = ref(false)
 const title = computed(() => (id.value ? '更新模板' : '保存模板'))
 const formState = ref<Record<string, string>>({})
 const menuTitle = ref('')
+const formConfig = ref<DefaultConfig>()
 
 const btns: any = computed(() => [
   {
@@ -53,14 +54,9 @@ const btns: any = computed(() => [
     clickFn: close,
   },
   {
-    title: '自定义指标卡',
-    icon: 'PlusOutlined',
-    clickFn: custom,
-  },
-  {
     title: '选择指标卡',
     icon: 'PlusOutlined',
-    clickFn: select,
+    clickFn: openModal,
   },
   {
     title: '清空',
@@ -85,10 +81,6 @@ async function getData() {
   // menuTitle.value = data.title
 }
 
-function handleSubmit2(widget: LayoutItem) {
-  localStorage.setItem('widget', JSON.stringify(widget))
-}
-
 function onClose() {
   sessionStorage.removeItem('TEMPLATE_ID')
   designerStore.clearAllLayout()
@@ -110,13 +102,7 @@ function close() {
   })
 }
 
-function custom() {
-  showModal2.value = true
-}
-
-const ccc = ref<Partial<LayoutItem>>({})
-function select() {
-  ccc.value = JSON.parse(localStorage.getItem('widget') || '{}')
+function openModal() {
   showModal.value = true
 }
 
@@ -136,13 +122,14 @@ function handleConfirm(item: LayoutItem) {
     newX = 0
     newY = lastItem.y + lastItem.h
   }
-  const component = {
+  const widget = {
     ...item,
     i: uuidv4(),
     x: newX,
     y: newY,
   }
-  designerStore.addWidget(component)
+  designerStore.addWidget(widget)
+  showModal.value = false
 }
 
 function clearAll() {
@@ -176,7 +163,8 @@ function save() {
   open.value = true
 }
 
-async function handleSubmit() {
+async function handleSubmit(params: Record<string, string>) {
+  console.log(params)
   loading.value = true
   // const params = {
   //   ...formState.value,
@@ -193,8 +181,14 @@ async function handleSubmit() {
   }, 1500)
 }
 
-function selectWidget(id: string) {
-  designerStore.setSelectedId(id)
+function handleSubmit2(config: DefaultConfig) {
+  designerStore.updateSelectedConfig(selectedId.value, config)
+}
+
+function settingWidget(item: LayoutItem) {
+  designerStore.setSelectedId(item.i)
+  showModal2.value = true
+  formConfig.value = { ...item.config }
 }
 
 function removeWidget(id: string) {
@@ -230,25 +224,25 @@ function removeWidget(id: string) {
             v-else
             v-model="layout"
             :selected-id="selectedId"
-            @select="selectWidget"
+            @setting="settingWidget"
             @remove="removeWidget"
           />
         </a-layout-content>
       </a-layout>
     </a-layout>
 
-    <!-- <CustomIndicatorModal v-model="showModal2" @submit="handleSubmit2" /> -->
-
-    <SelectIndicatorModal
-      v-model="showModal"
-      :ccc="[ccc]"
-      @confirm="handleConfirm"
+    <CustomIndicatorModal
+      v-model="showModal2"
+      :record="formConfig"
+      @submit="handleSubmit2"
     />
+
+    <SelectIndicatorModal v-model="showModal" @confirm="handleConfirm" />
 
     <SaveModal
       v-model="open"
-      v-model:form-state="formState"
       :title="title"
+      :record="formState"
       :confirm-loading="loading"
       @submit="handleSubmit"
     />
@@ -265,7 +259,6 @@ function removeWidget(id: string) {
   align-items: center;
   justify-content: center;
 }
-
 .ant-empty {
   :deep(&-image img) {
     margin: auto;

@@ -43,7 +43,6 @@ function getComponent(item: ComponentItem) {
     :is-resizable="!preview"
     :vertical-compact="true"
     :use-css-transforms="true"
-    
   >
     <GridItem
       v-for="item in layout"
@@ -53,7 +52,8 @@ function getComponent(item: ComponentItem) {
       :y="item.y"
       :w="item.w"
       :h="item.h"
-      :max-w="gridConfig.colNum"
+      :min-w="gridConfig.colNum / 6"
+      :min-h="gridConfig.colNum / 6"
     >
       <div class="full-card_wrapper">
         <a-card
@@ -63,8 +63,8 @@ function getComponent(item: ComponentItem) {
           :body-style="{ padding: '12px' }"
           :title="item.config.title"
         >
-          <template v-if="item.config.metrics?.length > 0" #extra>
-            <render-extra v-model="item.config" :item="item" />
+          <template v-if="item.w > 6 && item.config.metrics?.length > 0" #extra>
+            <render-extra v-model="item.config" />
           </template>
           <component :is="getComponent(item)" :chart-config="item.config" />
         </a-card>
@@ -115,10 +115,10 @@ function getComponent(item: ComponentItem) {
   .toolbar {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     padding: 4px 8px;
     border: 1px solid #e8e8e8;
-    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     background-color: #fff;
     transition: 0.1s linear;
     opacity: 0;

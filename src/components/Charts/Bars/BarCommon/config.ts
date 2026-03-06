@@ -6,6 +6,7 @@ export const BarCommonChartConfig = {
 }
 
 export const BarCommonCardConfig = {
+  showSelect: true,
   showlordMetrics: false,
 }
 

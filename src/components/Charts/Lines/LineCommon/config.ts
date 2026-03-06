@@ -6,6 +6,7 @@ export const LineCommonChartConfig = {
 }
 
 export const LineCommonCardConfig = {
+  showSelect: true,
   showlordMetrics: false,
 }
 

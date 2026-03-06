@@ -64,7 +64,7 @@ function handleCancel() {
   >
     <a-form ref="formRef" layout="vertical" :model="formConfig" :rules="rules">
       <a-form-item label="指标卡标题" name="title">
-        <a-input v-model:value="formConfig.title" />
+        <a-input v-model:value="formConfig.title" allow-clear />
       </a-form-item>
       <a-form-item label="选择指标" name="metrics">
         <a-cascader

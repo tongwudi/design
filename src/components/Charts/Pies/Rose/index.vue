@@ -9,7 +9,7 @@ const props = defineProps({
   },
 })
 
-const { fetchChartData } = useChartData(props.chartConfig, 'pie')
+const { fetchChartData } = useChartData('Pies')
 
 const chartRef = ref<HTMLDivElement | null>(null)
 let chartInstance: echarts.ECharts | null = null
@@ -25,7 +25,7 @@ async function initChart() {
   if (!chartRef.value) {
     return
   }
-  const requestData = await fetchChartData()
+  const requestData = await fetchChartData(props.chartConfig)
   if (chartInstance) {
     chartInstance.dispose()
   }
@@ -55,13 +55,9 @@ async function initChart() {
 
 watch(
   () => props.chartConfig.searchParams,
-  (newValue) => {
-    if (!newValue) {
-      return
-    }
+  () => {
     initChart()
   },
-  { deep: true },
 )
 
 onMounted(() => {

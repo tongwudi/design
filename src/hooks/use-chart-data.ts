@@ -1,7 +1,7 @@
-// import { designApis } from '@/api/designer'
+import { designApis } from '@/api/designer'
 
-export function useChartData(config: DefaultConfig, chartType: string) {
-  async function fetchChartData() {
+export function useChartData(chartType: string) {
+  async function fetchChartData(config: DefaultConfig) {
     const { multiple = true, metrics, lordMetricsId, searchParams: date, selectParams } = config
     if (!metrics || metrics?.length === 0) {
       return
@@ -13,10 +13,9 @@ export function useChartData(config: DefaultConfig, chartType: string) {
       startTime: date?.[0],
       endTime: date?.[1],
     }
-    if (chartType === 'statistic') {
+    if (chartType === 'Statistic') {
       params.metricsId = metricsStr
-      // const { data } = await designApis.getStatisticDetail({ params })
-      const data = {} as any
+      const { data } = await designApis.getStatisticDetail({ params })
       if (!data) {
         return
       }
@@ -25,19 +24,18 @@ export function useChartData(config: DefaultConfig, chartType: string) {
         count: data.total,
       }
     }
-    else if (chartType === 'pie') {
+    else if (chartType === 'Pies') {
       let fetchApi
       if (metrics.length === 1 && !lordMetricsId) {
         params.metricsId = metricsStr
-        // fetchApi = designApis.getPieDetailBySingle
+        fetchApi = designApis.getPieDetailBySingle
       }
       else {
         params.metricsIdList = metricsStr
         params.lordMetricsId = lordMetricsId?.[1] || 0
-        // fetchApi = designApis.getPieDetailByMultiple
+        fetchApi = designApis.getPieDetailByMultiple
       }
-      // const { data } = await fetchApi({ params })
-      const data = {} as any
+      const { data } = await fetchApi({ params })
       const pieData = data.pieData || []
       if (pieData.length === 0) {
         return
@@ -51,8 +49,7 @@ export function useChartData(config: DefaultConfig, chartType: string) {
     else {
       params.metricsIdList = metricsStr
       params.displayDimension = selectParams
-      // const { data = [] } = await designApis.getLineOrBarDetailByMultiple({ params })
-      const data = [] as any
+      const { data = [] } = await designApis.getLineOrBarDetailByMultiple({ params })
       if (data.length === 0) {
         return
       }

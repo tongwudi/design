@@ -5,8 +5,3 @@ export const StatisticConfig: ComponentItem = {
   title: '统计数值',
   package: 'Basic',
 }
-
-export const StatisticCardConfig = {
-  showlordMetrics: false,
-  multiple: false,
-}

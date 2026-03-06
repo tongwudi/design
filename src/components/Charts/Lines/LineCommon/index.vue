@@ -17,8 +17,8 @@ let resizeObserver: ResizeObserver | null = null
 const defaultData = {
   xAxisData: ['2026-01', '2026-02', '2026-03'],
   seriesData: [
-    { name: '下载统计-每月统计下载数量', type: 'line', data: [22.00, 0, 0] },
-    { name: '用户相关统计-每月统计用户登录数量', type: 'line', data: [50.00, 60.00, 0] },
+    { name: '每月统计下载数量', type: 'line', data: [22.0, 0, 0] },
+    { name: '每月统计用户登录数量', type: 'line', data: [50.0, 60.0, 0] },
   ],
 }
 
@@ -56,13 +56,12 @@ async function initChart() {
 
 watch(
   () => props.chartConfig.searchParams,
-  async (newValue) => {
+  (newValue) => {
     if (!newValue) {
       return
     }
     initChart()
   },
-  { deep: true },
 )
 
 onMounted(() => {

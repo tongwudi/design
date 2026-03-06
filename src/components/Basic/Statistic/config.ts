@@ -3,8 +3,6 @@ import { StatisticConfig } from './index'
 export const StatisticChartConfig = {
   w: 4,
   h: 4,
-  minW: 2,
-  minH: 4,
 }
 
 export const StatisticCardConfig = {

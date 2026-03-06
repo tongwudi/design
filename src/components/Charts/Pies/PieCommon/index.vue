@@ -52,7 +52,7 @@ async function initChart() {
 
 watch(
   () => props.chartConfig.searchParams,
-  async (newValue) => {
+  (newValue) => {
     if (!newValue) {
       return
     }

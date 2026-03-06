@@ -30,7 +30,7 @@ const layout = computed({
   get: () => designerStore.layout,
   set: newLayout => designerStore.updateLayout(newLayout),
 })
-const gridConfig = computed(() => designerStore.gridConfig)
+// const gridConfig = computed(() => designerStore.gridConfig)
 const selectedId = computed(() => designerStore.selectedId)
 
 const id = ref(sessionStorage.getItem('TEMPLATE_ID') || '')
@@ -89,6 +89,55 @@ function onClose() {
   menuTitle.value = ''
 }
 
+function handleAdd(item: WidgetItem) {
+  // const lastItem = layout.value[layout.value.length - 1] || {
+  //   x: 0,
+  //   y: 0,
+  //   w: 0,
+  //   h: 0,
+  // }
+  // const curRowUsedWidth = lastItem.x + lastItem.w
+  // let newX, newY
+  // if (curRowUsedWidth + item.w <= gridConfig.value.colNum) {
+  //   newX = curRowUsedWidth
+  //   newY = lastItem.y
+  // } else {
+  //   newX = 0
+  //   newY = lastItem.y + lastItem.h
+  // }
+  const widget = {
+    ...item,
+    i: uuidv4(),
+    x: 0,
+    y: 0,
+  }
+  designerStore.addWidget(widget)
+  showModal.value = false
+}
+
+async function handleSubmit(params: Record<string, string>) {
+  console.log(params)
+  loading.value = true
+  // const params = {
+  //   ...formState.value,
+  //   extraAttrs: JSON.stringify(layout.value),
+  // }
+  // const fetchApi = id.value ? designApis.updateTemplate : designApis.saveTemplate
+  // await fetchApi(params)
+  message.success(id.value ? '更新成功' : '保存成功')
+  loading.value = false
+  onClose()
+  open.value = false
+  setTimeout(() => {
+    window.location.reload()
+  }, 1500)
+}
+
+function handleSubmit2(config: DefaultConfig) {
+  designerStore.updateSelectedConfig(selectedId.value, config)
+  showModal2.value = false
+}
+
 function close() {
   Modal.confirm({
     title: '操作提示',
@@ -104,32 +153,6 @@ function close() {
 
 function openModal() {
   showModal.value = true
-}
-
-function handleConfirm(item: LayoutItem) {
-  const lastItem = layout.value[layout.value.length - 1] || {
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-  }
-  const curRowUsedWidth = lastItem.x + lastItem.w
-  let newX, newY
-  if (curRowUsedWidth + item.w <= gridConfig.value.colNum) {
-    newX = curRowUsedWidth
-    newY = lastItem.y
-  } else {
-    newX = 0
-    newY = lastItem.y + lastItem.h
-  }
-  const widget = {
-    ...item,
-    i: uuidv4(),
-    x: newX,
-    y: newY,
-  }
-  designerStore.addWidget(widget)
-  showModal.value = false
 }
 
 function clearAll() {
@@ -163,45 +186,25 @@ function save() {
   open.value = true
 }
 
-async function handleSubmit(params: Record<string, string>) {
-  console.log(params)
-  loading.value = true
-  // const params = {
-  //   ...formState.value,
-  //   extraAttrs: JSON.stringify(layout.value),
-  // }
-  // const fetchApi = id.value ? designApis.updateTemplate : designApis.saveTemplate
-  // await fetchApi(params)
-  message.success(id.value ? '更新成功' : '保存成功')
-  loading.value = false
-  onClose()
-  open.value = false
-  setTimeout(() => {
-    window.location.reload()
-  }, 1500)
-}
-
-function handleSubmit2(config: DefaultConfig) {
-  designerStore.updateSelectedConfig(selectedId.value, config)
-}
-
-function settingWidget(item: LayoutItem) {
-  designerStore.setSelectedId(item.i)
-  showModal2.value = true
-  formConfig.value = { ...item.config }
-}
-
-function removeWidget(id: string) {
-  Modal.confirm({
-    title: '操作提示',
-    type: 'warning',
-    content: '确定删除该组件吗?',
-    okText: '确认',
-    cancelText: '取消',
-    onOk: () => {
-      designerStore.removeWidget(id)
-    },
-  })
+function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
+  switch (action) {
+    case 'setting':
+      designerStore.setSelectedId(item.i)
+      showModal2.value = true
+      formConfig.value = { ...item.config }
+      break
+    case 'remove':
+      Modal.confirm({
+        title: '操作提示',
+        type: 'warning',
+        content: '确定删除该组件吗?',
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () => {
+          designerStore.removeWidget(item.i)
+        },
+      })
+  }
 }
 </script>
 
@@ -220,12 +223,11 @@ function removeWidget(id: string) {
               description="暂无组件, 请通过左侧组件菜单添加组件"
             />
           </div>
-          <CenterGrid
+          <GridCanvas
             v-else
             v-model="layout"
             :selected-id="selectedId"
-            @setting="settingWidget"
-            @remove="removeWidget"
+            @toolbar="toolbar"
           />
         </a-layout-content>
       </a-layout>
@@ -237,7 +239,7 @@ function removeWidget(id: string) {
       @submit="handleSubmit2"
     />
 
-    <SelectIndicatorModal v-model="showModal" @confirm="handleConfirm" />
+    <SelectIndicatorModal v-model="showModal" @add="handleAdd" />
 
     <SaveModal
       v-model="open"

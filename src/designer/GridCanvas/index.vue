@@ -15,7 +15,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['setting', 'remove'])
+const emit = defineEmits(['toolbar'])
 
 const layout = defineModel('modelValue', {
   type: Object,
@@ -25,12 +25,8 @@ const layout = defineModel('modelValue', {
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
-function setting(id: string) {
-  emit('setting', id)
-}
-
-function remove(id: string) {
-  emit('remove', id)
+function toolbar(action: 'setting' | 'remove', item: ComponentItem) {
+  emit('toolbar', action, item)
 }
 
 function getComponent(item: ComponentItem) {
@@ -45,6 +41,9 @@ function getComponent(item: ComponentItem) {
     v-bind="gridConfig"
     :is-draggable="!preview"
     :is-resizable="!preview"
+    :vertical-compact="true"
+    :use-css-transforms="true"
+    
   >
     <GridItem
       v-for="item in layout"
@@ -54,17 +53,17 @@ function getComponent(item: ComponentItem) {
       :y="item.y"
       :w="item.w"
       :h="item.h"
-      :min-w="item.minW || gridConfig.colNum / 4"
-      :min-h="item.minH || gridConfig.colNum / 3"
       :max-w="gridConfig.colNum"
     >
       <div class="full-card_wrapper">
         <a-card
           class="full-card"
           :class="{ active: selectedId === item.i }"
+          :head-style="{ padding: '12px' }"
+          :body-style="{ padding: '12px' }"
           :title="item.config.title"
         >
-          <template v-if="item.config.showSearch" #extra>
+          <template v-if="item.config.metrics?.length > 0" #extra>
             <render-extra v-model="item.config" :item="item" />
           </template>
           <component :is="getComponent(item)" :chart-config="item.config" />
@@ -75,12 +74,18 @@ function getComponent(item: ComponentItem) {
               <a-divider type="vertical" />
             </template>
             <a-tooltip title="配置" placement="bottom">
-              <a-typography-link type="secondary" @click="setting(item)">
+              <a-typography-link
+                type="secondary"
+                @click="toolbar('setting', item)"
+              >
                 <SettingOutlined />
               </a-typography-link>
             </a-tooltip>
             <a-tooltip title="删除" placement="bottom">
-              <a-typography-link type="secondary" @click="remove(item.i)">
+              <a-typography-link
+                type="secondary"
+                @click="toolbar('remove', item)"
+              >
                 <DeleteOutlined />
               </a-typography-link>
             </a-tooltip>
@@ -112,15 +117,17 @@ function getComponent(item: ComponentItem) {
     top: 0;
     right: 0;
     padding: 4px 8px;
+    border: 1px solid #e8e8e8;
     border-bottom-left-radius: 8px;
     background-color: #fff;
-    border: 1px solid #e8e8e8;
+    transition: 0.1s linear;
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.12s ease;
   }
   &:hover .toolbar {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
   }
 }

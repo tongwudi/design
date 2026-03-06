@@ -15,10 +15,6 @@ const visible = defineModel('modelValue', {
   type: Boolean,
   default: false,
 })
-// const formConfig = defineModel('formConfig', {
-//   type: Object as () => DefaultConfig,
-//   default: () => {},
-// })
 
 const emit = defineEmits(['submit'])
 
@@ -27,17 +23,15 @@ const designerStore = useDesignerStore()
 const formConfig = computed(() => props.record)
 
 const formRef = ref()
-const rules: Record<string, Rule[]> = {
-  template: [
-    {
-      type: 'array',
-      required: true,
-      message: '请选择模板',
-      trigger: ['change'],
-    },
-  ],
-}
+const rules: Record<string, Rule[]> = {}
 const metricOptions = processOptions(dataJson)
+
+watch(visible, newVal => {
+  if (!newVal) {
+    formRef.value.resetFields()
+    designerStore.setSelectedId('')
+  }
+})
 
 function processOptions(options: any[]): CascaderProps['options'] {
   return options.map((item: any) => ({
@@ -50,9 +44,7 @@ function processOptions(options: any[]): CascaderProps['options'] {
 async function handleSubmit() {
   try {
     await formRef.value.validate()
-    const { template, ...config } = formConfig.value
-    emit('submit', config)
-    handleCancel()
+    emit('submit', formConfig.value)
   } catch (error) {
     console.log(error)
   }
@@ -60,8 +52,6 @@ async function handleSubmit() {
 
 function handleCancel() {
   visible.value = false
-  formRef.value.resetFields()
-  designerStore.setSelectedId('')
 }
 </script>
 
@@ -97,9 +87,6 @@ function handleCancel() {
           </a-cascader>
         </a-form-item>
       </template>
-      <a-form-item label="是否显示搜索框" name="showSearch">
-        <a-switch v-model:checked="formConfig.showSearch" />
-      </a-form-item>
     </a-form>
   </a-modal>
 </template>

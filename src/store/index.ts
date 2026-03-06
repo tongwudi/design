@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
-    layout: [] as LayoutItem[],
+    layout: [] as WidgetItem[],
     gridConfig: {
       colNum: 24,
       rowHeight: 30,
@@ -11,7 +11,7 @@ export const useDesignerStore = defineStore('designer', {
     selectedId: '',
   }),
   actions: {
-    addWidget(component: LayoutItem) {
+    addWidget(component: WidgetItem) {
       this.layout.push(component)
     },
     removeWidget(id: string) {
@@ -41,7 +41,7 @@ export const useDesignerStore = defineStore('designer', {
       this.layout = []
       this.selectedId = ''
     },
-    updateLayout(newLayout: LayoutItem[]) {
+    updateLayout(newLayout: WidgetItem[]) {
       this.layout = newLayout
     },
   },

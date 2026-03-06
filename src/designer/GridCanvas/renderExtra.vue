@@ -3,7 +3,7 @@ import type { Dayjs, OpUnitType } from 'dayjs'
 import dayjs from 'dayjs'
 
 defineProps<{
-  item: LayoutItem
+  item: WidgetItem
 }>()
 
 const config = defineModel<DefaultConfig>('modelValue', {
@@ -12,7 +12,7 @@ const config = defineModel<DefaultConfig>('modelValue', {
 })
 
 const selectValue = ref('')
-const searchValue = ref<[string, string] | [Dayjs, Dayjs]>()
+const searchValue = ref<[Dayjs, Dayjs]>()
 
 const options = [
   { label: '天', value: 'DAY' },
@@ -39,22 +39,25 @@ function handleChange(value: [string, string] | [Dayjs, Dayjs]) {
 </script>
 
 <template>
-  <a-flex gap="small">
-    <a-select
-      v-if="item.key === 'Line' || item.key === 'Bar'"
-      v-model:value="selectValue"
-      style="width: 85px;"
-      allow-clear
-      :options="options"
-      @change="handleSelectChange"
-    />
-    <a-range-picker
-      v-model:value="searchValue"
-      style="width: 200px;"
-      show-time
-      value-format="YYYY-MM-DD HH:mm:ss"
-      :presets="presets"
-      @change="handleChange"
-    />
-  </a-flex>
+  <a-form layout="inline">
+    <a-form-item v-if="item.key === 'Line' || item.key === 'Bar'" label="显示维度">
+      <a-select
+        v-model:value="selectValue"
+        style="width: 85px;"
+        allow-clear
+        :options="options"
+        @change="handleSelectChange"
+      />
+    </a-form-item>
+    <a-form-item v-if="item.config.metrics?.length > 0">
+      <a-range-picker
+        v-model:value="searchValue"
+        style="width: 200px;"
+        show-time
+        value-format="YYYY-MM-DD HH:mm:ss"
+        :presets="presets"
+        @change="handleChange"
+      />
+    </a-form-item>
+  </a-form>
 </template>

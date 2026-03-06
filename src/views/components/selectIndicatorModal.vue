@@ -3,7 +3,7 @@ import { useDesignerStore } from '@/store'
 import { useAsideHook } from '@/hooks'
 import { createComponent } from '@/components'
 
-const emit = defineEmits(['confirm'])
+const emit = defineEmits(['add'])
 
 const visible = defineModel('modelValue', {
   type: Boolean,
@@ -15,7 +15,7 @@ const { menuOptions } = useAsideHook()
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
-const selectedWidget = ref<Partial<LayoutItem>>({})
+const selectedWidget = ref<Partial<WidgetItem>>({})
 
 watch(visible, newVal => {
   if (!newVal) {
@@ -33,8 +33,8 @@ function handleChange(w: number) {
   selectedWidget.value.w = w
 }
 
-function handleConfirm() {
-  emit('confirm', selectedWidget.value)
+function handleAdd() {
+  emit('add', selectedWidget.value)
 }
 
 const handleCancel = () => {
@@ -80,12 +80,11 @@ const handleCancel = () => {
           </template>
         </a-space>
         <a-flex style="margin-left: auto">
-          <a-button type="primary" ghost>自定义指标卡</a-button>
           <a-button @click="handleCancel">取消</a-button>
           <a-button
             type="primary"
             :disabled="Object.keys(selectedWidget).length === 0"
-            @click="handleConfirm"
+            @click="handleAdd"
           >
             确定
           </a-button>

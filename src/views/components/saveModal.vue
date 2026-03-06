@@ -23,6 +23,12 @@ const rules: Record<string, Rule[]> = {
   title: [{ required: true, message: '请输入菜单标题' }],
 }
 
+watch(visible, newVal => {
+  if (!newVal) {
+    formRef.value.resetFields()
+  }
+})
+
 async function handleSubmit() {
   try {
     await formRef.value.validate()
@@ -34,7 +40,6 @@ async function handleSubmit() {
 
 function handleCancel() {
   visible.value = false
-  formRef.value.resetFields()
 }
 </script>
 

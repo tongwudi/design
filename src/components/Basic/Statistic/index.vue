@@ -25,7 +25,7 @@ async function initChart() {
 
 watch(
   () => props.chartConfig.searchParams,
-  async newValue => {
+  (newValue) => {
     if (!newValue) {
       return
     }
@@ -35,7 +35,7 @@ watch(
 )
 
 onMounted(() => {
-  setTimeout(initChart, 100)
+  setTimeout(initChart, 200)
 })
 </script>
 

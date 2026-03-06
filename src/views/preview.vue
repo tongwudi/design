@@ -57,7 +57,7 @@ function editTemplate() {
 <template>
   <a-layout class="preview-layout">
     <a-layout-content :style="contentStyle">
-      <CenterGrid v-model="layout" preview />
+      <GridCanvas v-model="layout" preview />
     </a-layout-content>
     <div class="toolbar">
       <a-space :size="0">

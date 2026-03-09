@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
 import { componentInstall } from '@/utils'
-import { fetchChartComponent } from '@/components'
+import { fetchChartComponent } from '@/packages'
 import { useDesignerStore } from '@/store'
+import RenderExtra from './renderExtra.vue'
 
 const props = defineProps({
   preview: {
@@ -25,11 +26,13 @@ const layout = defineModel('modelValue', {
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
-function toolbar(action: 'setting' | 'remove', item: ComponentItem) {
+const extraRef = ref()
+
+function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   emit('toolbar', action, item)
 }
 
-function getComponent(item: ComponentItem) {
+function getComponent(item: WidgetItem) {
   componentInstall(item.key, fetchChartComponent(item))
   return item.key
 }
@@ -45,7 +48,7 @@ function getComponent(item: ComponentItem) {
     :use-css-transforms="true"
   >
     <GridItem
-      v-for="item in layout"
+      v-for="(item, index) in layout"
       :key="item.i"
       :i="item.i"
       :x="item.x"
@@ -64,7 +67,7 @@ function getComponent(item: ComponentItem) {
           :title="item.config.title"
         >
           <template v-if="item.w > 6 && item.config.metrics?.length > 0" #extra>
-            <render-extra v-model="item.config" />
+            <render-extra ref="extraRef" v-model="item.config" />
           </template>
           <component :is="getComponent(item)" :chart-config="item.config" />
         </a-card>
@@ -73,6 +76,14 @@ function getComponent(item: ComponentItem) {
             <template #split>
               <a-divider type="vertical" />
             </template>
+            <a-tooltip title="删除" placement="bottom">
+              <a-typography-link
+                type="secondary"
+                @click="toolbar('remove', item)"
+              >
+                <DeleteOutlined />
+              </a-typography-link>
+            </a-tooltip>
             <a-tooltip title="配置" placement="bottom">
               <a-typography-link
                 type="secondary"
@@ -81,12 +92,16 @@ function getComponent(item: ComponentItem) {
                 <SettingOutlined />
               </a-typography-link>
             </a-tooltip>
-            <a-tooltip title="删除" placement="bottom">
+            <a-tooltip
+              v-if="item.config.metrics?.length > 0"
+              title="刷新"
+              placement="bottom"
+            >
               <a-typography-link
                 type="secondary"
-                @click="toolbar('remove', item)"
+                @click="extraRef[index!].handleReset()"
               >
-                <DeleteOutlined />
+                <SyncOutlined />
               </a-typography-link>
             </a-tooltip>
           </a-space>

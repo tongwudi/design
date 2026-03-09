@@ -45,7 +45,10 @@ async function initChart() {
       right: 10,
       containLabel: true,
     },
-    xAxis: { type: 'category' },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+    },
     yAxis: { type: 'value' },
     dataset: { source: dataSource },
     series: result.map(() => ({ type: 'line', areaStyle: {} })),

@@ -1,4 +1,3 @@
-<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { CSSProperties } from 'vue'
 import { message, Modal } from 'ant-design-vue'

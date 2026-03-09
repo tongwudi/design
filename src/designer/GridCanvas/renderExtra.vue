@@ -12,6 +12,7 @@ interface FormState {
   searchValue: [string, string]
 }
 
+const formRef = ref()
 const formState = ref({} as FormState)
 
 const options = [
@@ -43,10 +44,19 @@ watch(
   },
   { deep: true },
 )
+
+function handleReset() {
+  if (!formState.value.selectValue && !formState.value.searchValue?.length) return
+  formRef.value.resetFields()
+}
+
+defineExpose({
+  handleReset,
+})
 </script>
 
 <template>
-  <a-form layout="inline">
+  <a-form ref="formRef" layout="inline" :model="formState">
     <a-form-item v-if="config.showSelect" label="显示维度" name="selectValue">
       <a-select
         v-model:value="formState.selectValue"

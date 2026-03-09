@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { message, Modal } from 'ant-design-vue'
 // import { designApis } from '@/api/designer'
 import { useDesignerStore } from '@/store'
+import HeaderBar from '@/designer/HeaderBar/index.vue'
+import GridCanvas from '@/designer/GridCanvas/index.vue'
 import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
 import ConfigModal from '@/views/components/configModal.vue'
 import SaveModal from '@/views/components/saveModal.vue'
@@ -24,16 +26,16 @@ const contentStyle: CSSProperties = {
   backgroundColor: '#f4f6fc',
 }
 
+const route = useRoute()
 const designerStore = useDesignerStore()
 
+const id = computed(() => route.meta.menuId as string)
 const layout = computed({
   get: () => designerStore.layout,
   set: newLayout => designerStore.updateLayout(newLayout),
 })
 // const gridConfig = computed(() => designerStore.gridConfig)
 const selectedId = computed(() => designerStore.selectedId)
-
-const id = ref(sessionStorage.getItem('TEMPLATE_ID') || '')
 
 const showModal2 = ref(false)
 const showModal = ref(false)
@@ -82,9 +84,7 @@ async function getData() {
 }
 
 function onClose() {
-  sessionStorage.removeItem('TEMPLATE_ID')
   designerStore.clearAllLayout()
-  id.value = ''
   formState.value = {}
   menuTitle.value = ''
 }

@@ -1,4 +1,3 @@
-<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import { useChartData } from '@/hooks'
 

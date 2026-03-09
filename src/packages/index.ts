@@ -1,20 +1,7 @@
-// import { BasicConfig, BasicList } from './Basic'
-// import { ChartsConfig, ChartsList } from './Charts'
-
-// export const componentsList: Record<string, ComponentItem[]> = {
-//   Basic: BasicList,
-//   Charts: ChartsList,
-// }
-
-// export const cardConfig: Record<string, Record<string, any>> = {
-//   Basic: BasicConfig,
-//   Charts: ChartsConfig,
-// }
-
 import { BasicList } from './Basic'
 import { ChartsList } from './Charts'
 
-const module: Record<string, { default: string }> = import.meta.glob('@/components/**/index.vue', {
+const module: Record<string, { default: string }> = import.meta.glob('@/packages/**/index.vue', {
   eager: true,
 })
 
@@ -23,7 +10,7 @@ export const packagesList: Record<string, string> = {
   Charts: '图表',
 }
 
-export const componentsList: Record<string, ComponentItem[]> = {
+export const componentsList = {
   Basic: BasicList,
   Charts: ChartsList,
 }

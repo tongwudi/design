@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useDesignerStore } from '@/store'
 import { useAsideHook } from '@/hooks'
-import { createComponent } from '@/components'
+import { createComponent } from '@/packages'
 
 const emit = defineEmits(['add'])
 
@@ -15,11 +15,14 @@ const { menuOptions } = useAsideHook()
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
 
+const activeKey = ref(menuOptions[0]?.key)
+
 const selectedWidget = ref<Partial<WidgetItem>>({})
 
-watch(visible, newVal => {
+watch(visible, (newVal) => {
   if (!newVal) {
     selectedWidget.value = {}
+    // activeKey.value = menuOptions[0]?.key
   }
 })
 
@@ -44,25 +47,29 @@ const handleCancel = () => {
 
 <template>
   <a-modal v-model:open="visible" title="选择指标卡" @cancel="handleCancel">
-    <div class="components">
-      <template v-for="item in menuOptions" :key="item.name">
-        <div class="components-cate">
-          {{ item.name }}
-        </div>
-        <ul class="components-list">
-          <template v-for="widget in item.list" :key="widget.key">
-            <li
-              class="components-item"
-              :class="{ active: selectedWidget.key === widget.key }"
-              :title="widget.title"
-              @click="handleClick(widget)"
-            >
-              {{ widget.title }}
-            </li>
+    <a-tabs v-model:active-key="activeKey">
+      <a-tab-pane v-for="tab in menuOptions" :key="tab.key" :tab="tab.name">
+        <div class="components">
+          <template v-for="item in tab.list" :key="item.name">
+            <div v-if="item.name" class="components-cate">
+              <setting-title>{{ item.name }}</setting-title>
+            </div>
+            <ul class="components-list">
+              <template v-for="widget in item.list" :key="widget.key">
+                <li
+                  class="components-item"
+                  :class="{ active: selectedWidget.key === widget.key }"
+                  :title="widget.title"
+                  @click="handleClick(widget)"
+                >
+                  {{ widget.title }}
+                </li>
+              </template>
+            </ul>
           </template>
-        </ul>
-      </template>
-    </div>
+        </div>
+      </a-tab-pane>
+    </a-tabs>
     <template #footer>
       <a-flex>
         <a-space v-if="Object.keys(selectedWidget).length > 0">
@@ -97,16 +104,13 @@ const handleCancel = () => {
 <style lang="less" scoped>
 .components {
   &-cate {
-    padding-bottom: 8px;
+    margin: 8px 0;
     font-weight: bold;
   }
   &-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    & + .components-cate {
-      margin-top: 8px;
-    }
   }
   &-item {
     height: 100px;

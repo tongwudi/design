@@ -1,4 +1,3 @@
-import type { PluginOption } from 'vite'
 import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import unocss from 'unocss/vite'
@@ -18,7 +17,10 @@ export default defineConfig({
     AutoImport({
       imports: ['vue', 'vue-router', '@vueuse/core'],
       dts: 'types/auto-imports.d.ts',
-    }) as PluginOption,
+      eslintrc: {
+        enabled: true, // Default `false`
+      },
+    }),
     Components({
       resolvers: [
         AntDesignVueResolver({
@@ -26,9 +28,8 @@ export default defineConfig({
           resolveIcons: true,
         }),
       ],
-      dirs: ['src/components', 'src/designer'],
       dts: 'types/components.d.ts',
-    }) as PluginOption,
+    }),
   ],
   resolve: {
     alias: {

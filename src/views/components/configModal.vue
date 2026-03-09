@@ -58,7 +58,7 @@ function handleCancel() {
 <template>
   <a-modal
     v-model:open="visible"
-    title="配置项"
+    title="配置"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >

@@ -15,17 +15,16 @@ const chartRef = ref<HTMLDivElement | null>(null)
 let chartInstance: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
 const defaultData = [
-  { value: 40, id: '2015983101094354947', name: '苹果' },
-  { value: 35, id: '2014137236251660292', name: '华为' },
-  { value: 30, id: '2014137236251660290', name: '小米' },
-  { value: 20, id: '2014137236251660293', name: '其他' },
+  { value: 20, name: '每月统计用户数据' },
+  { value: 10, name: '每月统计用户登录数量' },
 ]
 
 async function initChart() {
+  const requestData = await fetchChartData(props.chartConfig)
+  const dataSource = requestData?.length > 0 ? requestData : defaultData
   if (!chartRef.value) {
     return
   }
-  const requestData = await fetchChartData(props.chartConfig)
   if (chartInstance) {
     chartInstance.dispose()
   }
@@ -38,15 +37,15 @@ async function initChart() {
     tooltip: {},
     series: [
       {
+        name: '',
         type: 'pie',
         roseType: 'radius',
-        name: '',
-        center: ['50%', '60%'],
         radius: '60%',
+        center: ['50%', '60%'],
         label: {
           show: false,
         },
-        data: requestData || defaultData,
+        data: dataSource,
       },
     ],
   }

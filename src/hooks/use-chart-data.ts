@@ -37,30 +37,17 @@ export function useChartData(chartType: string) {
       }
       const { data } = await fetchApi({ params })
       const pieData = data.pieData || []
-      if (pieData.length === 0) {
-        return
-      }
       return pieData.map((item: any) => ({
         value: item.amount,
         id: item.metricsId,
         name: item.metricsName || item.periodDate,
-      }))
+      })) ?? []
     }
-    else {
+    else if (chartType === 'Lines' || chartType === 'Bars'){
       params.metricsIdList = metricsStr
       params.displayDimension = selectParams
-      const { data = [] } = await designApis.getLineOrBarDetailByMultiple({ params })
-      if (data.length === 0) {
-        return
-      }
-      return {
-        xAxisData: data[0]?.dates || [],
-        seriesData: data.map((item: any) => ({
-          name: item.metricsName,
-          type: chartType,
-          data: item.amounts || [],
-        })),
-      }
+      const { data } = await designApis.getLineOrBarDetailByMultiple({ params })
+      return data || []
     }
   }
   return {

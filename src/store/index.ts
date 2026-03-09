@@ -12,7 +12,7 @@ export const useDesignerStore = defineStore('designer', {
   }),
   actions: {
     addWidget(component: WidgetItem) {
-      this.layout.push(component)
+      this.layout.unshift(component)
     },
     removeWidget(id: string) {
       this.layout = this.layout.filter(obj => obj.i !== id)

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
 import { useChartData } from '@/hooks'
+import { generateSourceData } from '@/utils'
 
 const props = defineProps({
   chartConfig: {
@@ -9,25 +10,27 @@ const props = defineProps({
   },
 })
 
-const { fetchChartData } = useChartData('Pies')
+const { fetchChartData } = useChartData('Lines')
 
 const chartRef = ref<HTMLDivElement | null>(null)
 let chartInstance: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
 const defaultData = [
-  { value: 20, name: '每月统计用户数据' },
-  { value: 10, name: '每月统计用户登录数量' },
+  {
+    dates: ['2026-01', '2026-02', '2026-03'],
+    metricsName: '每月统计下载数量',
+    amounts: [22.0, 11.0, 0],
+  },
 ]
 
 async function initChart() {
   const requestData = await fetchChartData(props.chartConfig)
-  const dataSource = requestData?.length > 0 ? requestData : defaultData
+  const result = requestData?.length > 0 ? requestData : defaultData
+  const dataSource = generateSourceData(result)
   if (!chartRef.value) {
     return
   }
-  if (chartInstance) {
-    chartInstance.dispose()
-  }
+  chartInstance?.dispose()
   chartInstance = echarts.init(chartRef.value)
   const option = {
     legend: {
@@ -35,24 +38,23 @@ async function initChart() {
       top: 0,
     },
     tooltip: {},
-    series: [
-      {
-        name: '',
-        type: 'pie',
-        radius: '60%',
-        center: ['50%', '60%'],
-        label: {
-          show: false,
-        },
-        data: dataSource,
-      },
-    ],
+    grid: {
+      top: 40,
+      bottom: 0,
+      left: 10,
+      right: 10,
+      containLabel: true,
+    },
+    xAxis: { type: 'category' },
+    yAxis: { type: 'value' },
+    dataset: { source: dataSource },
+    series: result.map(() => ({ type: 'line', areaStyle: {} })),
   }
   chartInstance.setOption(option, true)
 }
 
 watch(
-  () => props.chartConfig.searchParams,
+  () => [props.chartConfig.selectParams, props.chartConfig.searchParams],
   () => {
     initChart()
   },

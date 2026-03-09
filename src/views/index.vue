@@ -6,7 +6,7 @@ import { message, Modal } from 'ant-design-vue'
 // import { designApis } from '@/api/designer'
 import { useDesignerStore } from '@/store'
 import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
-import CustomIndicatorModal from '@/views/components/customIndicatorModal.vue'
+import ConfigModal from '@/views/components/configModal.vue'
 import SaveModal from '@/views/components/saveModal.vue'
 
 const headerStyle: CSSProperties = {
@@ -233,7 +233,7 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
       </a-layout>
     </a-layout>
 
-    <CustomIndicatorModal
+    <ConfigModal
       v-model="showModal2"
       :record="formConfig"
       @submit="handleSubmit2"

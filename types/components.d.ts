@@ -30,6 +30,7 @@ declare module 'vue' {
     AModal: typeof import('ant-design-vue/es')['Modal']
     AppstoreOutlined: typeof import('@ant-design/icons-vue')['AppstoreOutlined']
     ARangePicker: typeof import('ant-design-vue/es')['RangePicker']
+    Area: typeof import('./../src/components/Charts/Lines/Area/index.vue')['default']
     ARow: typeof import('ant-design-vue/es')['Row']
     ArrowDownOutlined: typeof import('@ant-design/icons-vue')['ArrowDownOutlined']
     ASelect: typeof import('ant-design-vue/es')['Select']

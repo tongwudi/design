@@ -26,7 +26,7 @@ const formRef = ref()
 const rules: Record<string, Rule[]> = {}
 const metricOptions = processOptions(dataJson)
 
-watch(visible, newVal => {
+watch(visible, (newVal) => {
   if (!newVal) {
     formRef.value.resetFields()
     designerStore.setSelectedId('')
@@ -58,7 +58,7 @@ function handleCancel() {
 <template>
   <a-modal
     v-model:open="visible"
-    title="自定义指标卡2"
+    title="配置项"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >

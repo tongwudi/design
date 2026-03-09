@@ -10,10 +10,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  selectedId: {
-    type: String,
-    default: '',
-  },
 })
 
 const emit = defineEmits(['toolbar'])
@@ -25,8 +21,7 @@ const layout = defineModel('modelValue', {
 
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
-
-const extraRef = ref()
+const selectedId = computed(() => designerStore.selectedId)
 
 function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   emit('toolbar', action, item)
@@ -48,7 +43,7 @@ function getComponent(item: WidgetItem) {
     :use-css-transforms="true"
   >
     <GridItem
-      v-for="(item, index) in layout"
+      v-for="item in layout"
       :key="item.i"
       :i="item.i"
       :x="item.x"
@@ -66,8 +61,11 @@ function getComponent(item: WidgetItem) {
           :body-style="{ padding: '12px' }"
           :title="item.config.title"
         >
-          <template v-if="item.w > 6 && item.config.metrics?.length > 0" #extra>
-            <render-extra ref="extraRef" v-model="item.config" />
+          <template #extra>
+            <render-extra
+              v-if="item.config.metrics?.length > 0"
+              v-model="item.config"
+            />
           </template>
           <component :is="getComponent(item)" :chart-config="item.config" />
         </a-card>
@@ -90,18 +88,6 @@ function getComponent(item: WidgetItem) {
                 @click="toolbar('setting', item)"
               >
                 <SettingOutlined />
-              </a-typography-link>
-            </a-tooltip>
-            <a-tooltip
-              v-if="item.config.metrics?.length > 0"
-              title="刷新"
-              placement="bottom"
-            >
-              <a-typography-link
-                type="secondary"
-                @click="extraRef[index!].handleReset()"
-              >
-                <SyncOutlined />
               </a-typography-link>
             </a-tooltip>
           </a-space>

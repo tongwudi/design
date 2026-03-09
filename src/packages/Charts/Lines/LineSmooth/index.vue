@@ -17,9 +17,9 @@ let chartInstance: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
 const defaultData = [
   {
-    dates: ['2026-01', '2026-02', '2026-03'],
-    metricsName: '每月统计下载数量',
-    amounts: [22.0, 11.0, 0],
+    metricsName: '统计数量',
+    dates: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    amounts: [150, 230, 224, 218, 135, 147, 260],
   },
 ]
 
@@ -45,13 +45,10 @@ async function initChart() {
       right: 10,
       containLabel: true,
     },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-    },
+    xAxis: { type: 'category' },
     yAxis: { type: 'value' },
     dataset: { source: dataSource },
-    series: result.map(() => ({ type: 'line', areaStyle: {} })),
+    series: result.map(() => ({ type: 'line', smooth: true })),
   }
   chartInstance.setOption(option, true)
 }

@@ -13,7 +13,7 @@ const visible = defineModel('modelValue', {
   default: false,
 })
 
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['save'])
 
 const formState = computed(() => props.record)
 
@@ -29,10 +29,10 @@ watch(visible, newVal => {
   }
 })
 
-async function handleSubmit() {
+async function handleSave() {
   try {
     await formRef.value.validate()
-    emit('submit', formState.value)
+    emit('save', formState.value)
   } catch (error) {
     console.log(error)
   }
@@ -47,7 +47,7 @@ function handleCancel() {
   <a-modal
     v-model:open="visible"
     v-bind="$attrs"
-    @ok="handleSubmit"
+    @ok="handleSave"
     @cancel="handleCancel"
   >
     <a-form ref="formRef" :model="formState" :rules="rules">

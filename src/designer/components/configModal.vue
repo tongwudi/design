@@ -9,6 +9,10 @@ const props = defineProps({
     type: Object as () => DefaultConfig,
     default: () => {},
   },
+  confirmLoading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const visible = defineModel('modelValue', {
@@ -59,6 +63,7 @@ function handleCancel() {
   <a-modal
     v-model:open="visible"
     title="配置"
+    :confirm-loading="confirmLoading"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >

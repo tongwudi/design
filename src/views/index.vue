@@ -7,9 +7,9 @@ import { message, Modal } from 'ant-design-vue'
 import { useDesignerStore } from '@/store'
 import HeaderBar from '@/designer/HeaderBar/index.vue'
 import GridCanvas from '@/designer/GridCanvas/index.vue'
-import selectMetricModal from '@/views/components/selectMetricModal.vue'
-import ConfigModal from '@/views/components/configModal.vue'
-import SaveModal from '@/views/components/saveModal.vue'
+import AddMetricModal from '@/designer/components/addMetricModal.vue'
+import ConfigModal from '@/designer/components/configModal.vue'
+import SaveModal from '@/designer/components/saveModal.vue'
 
 const headerStyle: CSSProperties = {
   height: 'var(--header-height)',
@@ -21,33 +21,28 @@ const headerStyle: CSSProperties = {
 
 const contentStyle: CSSProperties = {
   overflow: 'auto',
-  borderLeft: '1px solid rgba(5, 5, 5, 0.06)',
-  borderRight: '1px solid rgba(5, 5, 5, 0.06)',
   backgroundColor: '#f4f6fc',
 }
 
 const route = useRoute()
 const designerStore = useDesignerStore()
 
-const id = computed(() => route.meta.menuId as string)
 const layout = computed({
   get: () => designerStore.layout,
-  set: newLayout => designerStore.updateLayout(newLayout),
+  set: (newLayout) => designerStore.updateLayout(newLayout),
 })
 // const gridConfig = computed(() => designerStore.gridConfig)
 const selectedId = computed(() => designerStore.selectedId)
 
-const showModal2 = ref(false)
-const showModal = ref(false)
-
-const open = ref(false)
-const loading = ref(false)
+const id = computed(() => route.meta.menuId as string)
 const title = computed(() => (id.value ? '更新模板' : '保存模板'))
-const formState = ref<Record<string, string>>({})
-const menuTitle = ref('')
-const formConfig = ref<DefaultConfig>()
 
 const btns: any = computed(() => [
+  // {
+  //   title: '编辑',
+  //   icon: 'EditOutlined',
+  //   show: id.value,
+  // },
   {
     title: '退出编辑',
     icon: 'CloseOutlined',
@@ -72,8 +67,20 @@ const btns: any = computed(() => [
   },
 ])
 
+const showModal = ref(false)
+
+const showConfigModal = ref(false)
+const formConfig = ref<DefaultConfig>()
+const confirmLoading = ref(false)
+
+const show = ref(false)
+const formState = ref<Record<string, string>>({})
+const loading = ref(false)
+const menuTitle = ref('')
+
 onMounted(() => {
   id.value && getData()
+  // getData()
 })
 
 async function getData() {
@@ -81,11 +88,49 @@ async function getData() {
   // designerStore.updateLayout(JSON.parse(data?.extraAttrs || '[]'))
   // formState.value = data
   // menuTitle.value = data.title
+  const extraAttrs = [
+    {
+      category: 'Pies',
+      categoryName: '饼图',
+      key: 'PieRing',
+      title: '环形图',
+      package: 'Charts',
+      w: 12,
+      h: 8,
+      config: {
+        showlordMetrics: true,
+      },
+      i: 'a7a4caf2-fa30-49cb-8b97-d8cde03dc580',
+      x: 12,
+      y: 0,
+    },
+    {
+      category: 'Bars',
+      categoryName: '柱状图',
+      key: 'BarCommon',
+      title: '基础柱状图',
+      package: 'Charts',
+      w: 12,
+      h: 8,
+      config: {
+        showSelect: true,
+        showlordMetrics: false,
+        metrics: [
+          ['用户相关统计', '2014137236251660290'],
+          ['用户相关统计2', '2015983101094354947'],
+        ],
+        title: '风帆股份',
+      },
+      i: '86e56084-f0cd-4235-b408-e7e0df1eeceb',
+      x: 0,
+      y: 0,
+    },
+  ]
+  designerStore.updateLayout(extraAttrs)
 }
 
 function onClose() {
   designerStore.clearAllLayout()
-  formState.value = {}
   menuTitle.value = ''
 }
 
@@ -115,8 +160,13 @@ function handleAdd(item: WidgetItem) {
   showModal.value = false
 }
 
-async function handleSubmit(params: Record<string, string>) {
-  console.log(params)
+function handleSubmit(config: DefaultConfig) {
+  designerStore.updateSelectedConfig(selectedId.value, config)
+  showConfigModal.value = false
+}
+
+async function handleSave(params: Record<string, string>) {
+  console.log(params, layout.value)
   loading.value = true
   // const params = {
   //   ...formState.value,
@@ -126,16 +176,11 @@ async function handleSubmit(params: Record<string, string>) {
   // await fetchApi(params)
   message.success(id.value ? '更新成功' : '保存成功')
   loading.value = false
-  onClose()
-  open.value = false
-  setTimeout(() => {
-    window.location.reload()
-  }, 1500)
-}
-
-function handleSubmit2(config: DefaultConfig) {
-  designerStore.updateSelectedConfig(selectedId.value, config)
-  showModal2.value = false
+  show.value = false
+  // onClose()
+  // setTimeout(() => {
+  //   window.location.reload()
+  // }, 1500)
 }
 
 function close() {
@@ -183,21 +228,21 @@ function save() {
     })
     return
   }
-  open.value = true
+  show.value = true
 }
 
 function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   switch (action) {
     case 'setting':
       designerStore.setSelectedId(item.i)
-      showModal2.value = true
+      showConfigModal.value = true
       formConfig.value = { ...item.config }
       break
     case 'remove':
       Modal.confirm({
         title: '操作提示',
         type: 'warning',
-        content: '确定删除该组件吗?',
+        content: '确定删除该指标卡吗?',
         okText: '确认',
         cancelText: '取消',
         onOk: () => {
@@ -223,30 +268,26 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
               description="暂无组件, 请通过左侧组件菜单添加组件"
             />
           </div>
-          <GridCanvas
-            v-else
-            v-model="layout"
-            :selected-id="selectedId"
-            @toolbar="toolbar"
-          />
+          <GridCanvas v-else v-model="layout" @toolbar="toolbar" />
         </a-layout-content>
       </a-layout>
     </a-layout>
 
+    <AddMetricModal v-model="showModal" @add="handleAdd" />
+
     <ConfigModal
-      v-model="showModal2"
+      v-model="showConfigModal"
       :record="formConfig"
-      @submit="handleSubmit2"
+      :confirm-loading="confirmLoading"
+      @submit="handleSubmit"
     />
 
-    <selectMetricModal v-model="showModal" @add="handleAdd" />
-
     <SaveModal
-      v-model="open"
+      v-model="show"
       :title="title"
       :record="formState"
       :confirm-loading="loading"
-      @submit="handleSubmit"
+      @save="handleSave"
     />
   </div>
 </template>

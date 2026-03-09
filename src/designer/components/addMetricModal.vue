@@ -30,7 +30,6 @@ async function handleClick(item: ComponentItem) {
   const newComponent = await createComponent(item)
   const { chart, config } = newComponent
   selectedWidget.value = { ...item, ...chart, config }
-  console.log(selectedWidget.value)
 }
 
 function handleAdd() {
@@ -74,7 +73,7 @@ const handleCancel = () => {
           style="width: 100px; text-align: center"
           v-model:value="selectedWidget.w"
         >
-          <template v-for="i in [4, 3, 2, 1]" :key="i">
+          <template v-for="i in [6, 4, 3, 2, 1]" :key="i">
             <a-select-option :value="gridConfig.colNum / i">
               {{ i === 1 ? '1' : `1/${i}` }}
             </a-select-option>

@@ -45,10 +45,10 @@ async function initChart() {
       right: 10,
       containLabel: true,
     },
-    xAxis: { type: 'category' },
-    yAxis: { type: 'value' },
+    xAxis: { type: 'value' },
+    yAxis: { type: 'category' },
     dataset: { source: dataSource },
-    series: result.map(() => ({ type: 'line' })),
+    series: result.map(() => ({ type: 'bar' })),
   }
   chartInstance.setOption(option, true)
 }

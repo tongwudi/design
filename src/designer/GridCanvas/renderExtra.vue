@@ -7,14 +7,6 @@ const config = defineModel<DefaultConfig>('modelValue', {
   default: () => ({}),
 })
 
-interface FormState {
-  selectValue: string
-  searchValue: [string, string]
-}
-
-const formRef = ref()
-const formState = ref({} as FormState)
-
 const options = [
   { label: '天', value: 'DAY' },
   { label: '周', value: 'WEEK' },
@@ -28,46 +20,25 @@ const presets = [
   { label: '本月', value: [dayjs().startOf('month'), dayjs().endOf('month')] },
   {
     label: '本季度',
-    value: [
-      dayjs().startOf('quarter' as OpUnitType),
-      dayjs().endOf('quarter' as OpUnitType),
-    ],
+    value: [dayjs().startOf('quarter' as OpUnitType), dayjs().endOf('quarter' as OpUnitType)],
   },
   { label: '本年', value: [dayjs().startOf('year'), dayjs().endOf('year')] },
 ]
-
-watch(
-  formState,
-  (newValue) => {
-    config.value.selectParams = newValue.selectValue
-    config.value.searchParams = newValue.searchValue
-  },
-  { deep: true },
-)
-
-function handleReset() {
-  if (!formState.value.selectValue && !formState.value.searchValue?.length) return
-  formRef.value.resetFields()
-}
-
-defineExpose({
-  handleReset,
-})
 </script>
 
 <template>
-  <a-form ref="formRef" layout="inline" :model="formState">
-    <a-form-item v-if="config.showSelect" label="显示维度" name="selectValue">
+  <a-form ref="formRef" layout="inline" :model="config">
+    <a-form-item v-if="config.showSelect" label="显示维度" name="selectParams">
       <a-select
-        v-model:value="formState.selectValue"
+        v-model:value="config.selectParams"
         style="width: 85px"
         allow-clear
         :options="options"
       />
     </a-form-item>
-    <a-form-item v-if="config.metrics?.length > 0" name="searchValue">
+    <a-form-item v-if="config.metrics?.length > 0" name="searchParams">
       <a-range-picker
-        v-model:value="formState.searchValue"
+        v-model:value="config.searchParams"
         style="width: 200px"
         show-time
         value-format="YYYY-MM-DD HH:mm:ss"

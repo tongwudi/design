@@ -1,4 +1,5 @@
 import { LineCommonConfig } from './LineCommon/index'
-import { AreaConfig } from './Area/index'
+import { LineSmoothConfig } from './LineSmooth/index'
+import { LineAreaConfig } from './LineArea/index'
 
-export default [LineCommonConfig, AreaConfig]
+export default [LineCommonConfig, LineSmoothConfig, LineAreaConfig]

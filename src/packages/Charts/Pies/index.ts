@@ -1,4 +1,5 @@
 import { PieCommonConfig } from './PieCommon/index'
-import { RoseConfig } from './Rose/index'
+import { PieRoseConfig } from './PieRose/index'
+import { PieRingConfig } from './PieRing/index'
 
-export default [PieCommonConfig, RoseConfig]
+export default [PieCommonConfig, PieRoseConfig, PieRingConfig]

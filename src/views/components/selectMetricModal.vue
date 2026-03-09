@@ -30,10 +30,7 @@ async function handleClick(item: ComponentItem) {
   const newComponent = await createComponent(item)
   const { chart, config } = newComponent
   selectedWidget.value = { ...item, ...chart, config }
-}
-
-function handleChange(w: number) {
-  selectedWidget.value.w = w
+  console.log(selectedWidget.value)
 }
 
 function handleAdd() {
@@ -72,20 +69,17 @@ const handleCancel = () => {
     </a-tabs>
     <template #footer>
       <a-flex>
-        <a-space v-if="Object.keys(selectedWidget).length > 0">
-          <template #split>
-            <a-divider type="vertical" />
-          </template>
+        <a-select
+          v-if="Object.keys(selectedWidget).length > 0"
+          style="width: 100px; text-align: center"
+          v-model:value="selectedWidget.w"
+        >
           <template v-for="i in [4, 3, 2, 1]" :key="i">
-            <a-typography-link
-              type="secondary"
-              :disabled="selectedWidget.w === gridConfig.colNum / i"
-              @click="handleChange(gridConfig.colNum / i)"
-            >
+            <a-select-option :value="gridConfig.colNum / i">
               {{ i === 1 ? '1' : `1/${i}` }}
-            </a-typography-link>
+            </a-select-option>
           </template>
-        </a-space>
+        </a-select>
         <a-flex style="margin-left: auto">
           <a-button @click="handleCancel">取消</a-button>
           <a-button

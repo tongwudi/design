@@ -7,7 +7,7 @@ import { message, Modal } from 'ant-design-vue'
 import { useDesignerStore } from '@/store'
 import HeaderBar from '@/designer/HeaderBar/index.vue'
 import GridCanvas from '@/designer/GridCanvas/index.vue'
-import SelectIndicatorModal from '@/views/components/selectIndicatorModal.vue'
+import selectMetricModal from '@/views/components/selectMetricModal.vue'
 import ConfigModal from '@/views/components/configModal.vue'
 import SaveModal from '@/views/components/saveModal.vue'
 
@@ -239,7 +239,7 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
       @submit="handleSubmit2"
     />
 
-    <SelectIndicatorModal v-model="showModal" @add="handleAdd" />
+    <selectMetricModal v-model="showModal" @add="handleAdd" />
 
     <SaveModal
       v-model="open"

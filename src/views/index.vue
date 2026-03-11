@@ -139,7 +139,7 @@ function handleAdd(item: WidgetItem) {
     x: 0,
     y: 0,
   }
-  layout.value.push(widget)
+  layout.value.unshift(widget)
   showModal.value = false
 }
 

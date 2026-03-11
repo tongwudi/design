@@ -21,7 +21,6 @@ const layout = defineModel('modelValue', {
 
 const designerStore = useDesignerStore()
 const gridConfig = computed(() => designerStore.gridConfig)
-const selectedId = computed(() => designerStore.selectedId)
 
 function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   emit('toolbar', action, item)
@@ -56,7 +55,6 @@ function getComponent(item: WidgetItem) {
       <div class="full-card_wrapper">
         <a-card
           class="full-card"
-          :class="{ active: selectedId === item.i }"
           :head-style="{ padding: '12px' }"
           :body-style="{ padding: '12px' }"
           :title="item.config.title"

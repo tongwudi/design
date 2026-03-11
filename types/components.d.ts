@@ -38,6 +38,5 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SettingOutlined: typeof import('@ant-design/icons-vue')['SettingOutlined']
     SettingTitle: typeof import('./../src/components/SettingTitle/index.vue')['default']
-    SyncOutlined: typeof import('@ant-design/icons-vue')['SyncOutlined']
   }
 }

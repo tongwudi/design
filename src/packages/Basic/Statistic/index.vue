@@ -15,7 +15,7 @@ const defaultData = {
   count: 0,
 }
 
-const statisticData = ref<{ title: string; count: number }>(defaultData)
+const statisticData = ref<{ title: string, count: number }>(defaultData)
 
 async function initChart() {
   const requestData = await fetchChartData(props.chartConfig)

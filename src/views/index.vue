@@ -1,15 +1,15 @@
 <!-- eslint-disable no-console -->
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
 import { message, Modal } from 'ant-design-vue'
-// import { designApis } from '@/api/designer'
-import { useDesignerStore } from '@/store'
-import HeaderBar from '@/designer/HeaderBar/index.vue'
-import GridCanvas from '@/designer/GridCanvas/index.vue'
+import { v4 as uuidv4 } from 'uuid'
+// import { designApis } from '@/apis'
 import AddMetricModal from '@/designer/components/addMetricModal.vue'
 import ConfigModal from '@/designer/components/configModal.vue'
 import SaveModal from '@/designer/components/saveModal.vue'
+import GridCanvas from '@/designer/GridCanvas/index.vue'
+import HeaderBar from '@/designer/HeaderBar/index.vue'
+// import { useDesignerStore } from '@/store'
 
 const headerStyle: CSSProperties = {
   height: 'var(--header-height)',
@@ -25,47 +25,17 @@ const contentStyle: CSSProperties = {
 }
 
 const route = useRoute()
-const designerStore = useDesignerStore()
-
-const layout = computed({
-  get: () => designerStore.layout,
-  set: (newLayout) => designerStore.updateLayout(newLayout),
-})
+// const designerStore = useDesignerStore()
 // const gridConfig = computed(() => designerStore.gridConfig)
-const selectedId = computed(() => designerStore.selectedId)
+
+const layout = ref<WidgetItem[]>([])
+const cacheLayout = ref<WidgetItem[]>([])
+const selectedId = ref()
 
 const id = computed(() => route.meta.menuId as string)
-const title = computed(() => (id.value ? '更新模板' : '保存模板'))
-
-const btns: any = computed(() => [
-  // {
-  //   title: '编辑',
-  //   icon: 'EditOutlined',
-  //   show: id.value,
-  // },
-  {
-    title: '退出编辑',
-    icon: 'CloseOutlined',
-    isDanger: true,
-    show: menuTitle.value,
-    clickFn: close,
-  },
-  {
-    title: '选择指标卡',
-    icon: 'PlusOutlined',
-    clickFn: openModal,
-  },
-  {
-    title: '清空',
-    icon: 'DeleteOutlined',
-    clickFn: clearAll,
-  },
-  {
-    title: '保存',
-    icon: 'SaveOutlined',
-    clickFn: save,
-  },
-])
+const title = computed(() => (id.value ? '更新' : '保存'))
+const preview = ref(false)
+const menuTitle = ref('')
 
 const showModal = ref(false)
 
@@ -76,62 +46,75 @@ const confirmLoading = ref(false)
 const show = ref(false)
 const formState = ref<Record<string, string>>({})
 const loading = ref(false)
-const menuTitle = ref('')
+
+const btns: any = computed(() => [
+  {
+    title: '编辑',
+    icon: 'EditOutlined',
+    show: preview.value,
+    clickFn: () => {
+      preview.value = false
+      cacheLayout.value = [...layout.value]
+    },
+  },
+  {
+    title: '删除',
+    isDanger: true,
+    icon: 'DeleteOutlined',
+    show: preview.value,
+    clickFn: removePage,
+  },
+  {
+    title: '退出编辑',
+    icon: 'CloseOutlined',
+    isDanger: true,
+    show: !!id.value && !preview.value,
+    clickFn: () => {
+      Modal.confirm({
+        title: '操作提示',
+        type: 'warning',
+        content: '确定要退出编辑吗？退出编辑后将无法保存',
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () => {
+          preview.value = true
+          layout.value = [...cacheLayout.value]
+        },
+      })
+    },
+  },
+  {
+    title: '选择指标卡',
+    icon: 'PlusOutlined',
+    show: !preview.value,
+    clickFn: () => {
+      showModal.value = true
+    },
+  },
+  {
+    title: '清空',
+    icon: 'DeleteOutlined',
+    show: !preview.value,
+    clickFn: clearAll,
+  },
+  {
+    title,
+    icon: 'SaveOutlined',
+    show: !preview.value,
+    clickFn: savePage,
+  },
+])
 
 onMounted(() => {
   id.value && getData()
-  // getData()
 })
 
 async function getData() {
   // const { data } = await designApis.getTemplateDetail({ params: { id: id.value } })
-  // designerStore.updateLayout(JSON.parse(data?.extraAttrs || '[]'))
+  // layout.value = JSON.parse(data?.extraAttrs || '[]')
   // formState.value = data
   // menuTitle.value = data.title
-  const extraAttrs = [
-    {
-      category: 'Pies',
-      categoryName: '饼图',
-      key: 'PieRing',
-      title: '环形图',
-      package: 'Charts',
-      w: 12,
-      h: 8,
-      config: {
-        showlordMetrics: true,
-      },
-      i: 'a7a4caf2-fa30-49cb-8b97-d8cde03dc580',
-      x: 12,
-      y: 0,
-    },
-    {
-      category: 'Bars',
-      categoryName: '柱状图',
-      key: 'BarCommon',
-      title: '基础柱状图',
-      package: 'Charts',
-      w: 12,
-      h: 8,
-      config: {
-        showSelect: true,
-        showlordMetrics: false,
-        metrics: [
-          ['用户相关统计', '2014137236251660290'],
-          ['用户相关统计2', '2015983101094354947'],
-        ],
-        title: '风帆股份',
-      },
-      i: '86e56084-f0cd-4235-b408-e7e0df1eeceb',
-      x: 0,
-      y: 0,
-    },
-  ]
-  designerStore.updateLayout(extraAttrs)
-}
-
-function onClose() {
-  designerStore.clearAllLayout()
-  menuTitle.value = ''
+  preview.value = true
 }
 
 function handleAdd(item: WidgetItem) {
@@ -156,20 +139,23 @@ function handleAdd(item: WidgetItem) {
     x: 0,
     y: 0,
   }
-  designerStore.addWidget(widget)
+  layout.value.push(widget)
   showModal.value = false
 }
 
 function handleSubmit(config: DefaultConfig) {
-  designerStore.updateSelectedConfig(selectedId.value, config)
+  const index = layout.value.findIndex(obj => obj.i === selectedId.value)
+  if (index !== -1) {
+    layout.value[index]!.config = { ...config }
+  }
   showConfigModal.value = false
 }
 
-async function handleSave(params: Record<string, string>) {
-  console.log(params, layout.value)
+async function handleSave(data: Record<string, string>) {
+  console.log(data)
   loading.value = true
   // const params = {
-  //   ...formState.value,
+  //   ...data,
   //   extraAttrs: JSON.stringify(layout.value),
   // }
   // const fetchApi = id.value ? designApis.updateTemplate : designApis.saveTemplate
@@ -177,27 +163,28 @@ async function handleSave(params: Record<string, string>) {
   message.success(id.value ? '更新成功' : '保存成功')
   loading.value = false
   show.value = false
-  // onClose()
-  // setTimeout(() => {
-  //   window.location.reload()
-  // }, 1500)
+  setTimeout(() => {
+    window.location.reload()
+  }, 1500)
 }
 
-function close() {
+function removePage() {
   Modal.confirm({
     title: '操作提示',
     type: 'warning',
-    content: '确定要退出编辑吗?',
+    content: '确定删除当前页面吗?',
     okText: '确认',
     cancelText: '取消',
-    onOk: () => {
-      onClose()
+    onOk: async () => {
+      // await designApis.deleteTemplate({ id: id.value })
+      message.success('删除成功')
+      // setTimeout(() => {
+      //   router.push('/').then(() => {
+      //     window.location.reload()
+      //   })
+      // }, 1500)
     },
   })
-}
-
-function openModal() {
-  showModal.value = true
 }
 
 function clearAll() {
@@ -215,12 +202,13 @@ function clearAll() {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      designerStore.clearAllLayout()
+      layout.value = []
+      selectedId.value = ''
     },
   })
 }
 
-function save() {
+function savePage() {
   if (layout.value.length === 0) {
     Modal.error({
       title: '操作提示',
@@ -234,8 +222,8 @@ function save() {
 function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   switch (action) {
     case 'setting':
-      designerStore.setSelectedId(item.i)
       showConfigModal.value = true
+      selectedId.value = item.i
       formConfig.value = { ...item.config }
       break
     case 'remove':
@@ -246,7 +234,7 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
         okText: '确认',
         cancelText: '取消',
         onOk: () => {
-          designerStore.removeWidget(item.i)
+          layout.value = layout.value.filter(obj => obj.i !== item.i)
         },
       })
   }
@@ -265,10 +253,14 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
             <a-empty
               style="color: #2aa198"
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-              description="暂无组件, 请通过左侧组件菜单添加组件"
             />
           </div>
-          <GridCanvas v-else v-model="layout" @toolbar="toolbar" />
+          <GridCanvas
+            v-else
+            v-model="layout"
+            :preview="preview"
+            @toolbar="toolbar"
+          />
         </a-layout-content>
       </a-layout>
     </a-layout>

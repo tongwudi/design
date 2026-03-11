@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { Rule } from 'ant-design-vue/es/form'
 
@@ -8,12 +9,12 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['save'])
+
 const visible = defineModel('modelValue', {
   type: Boolean,
   default: false,
 })
-
-const emit = defineEmits(['save'])
 
 const formState = computed(() => props.record)
 
@@ -23,7 +24,7 @@ const rules: Record<string, Rule[]> = {
   title: [{ required: true, message: '请输入菜单标题' }],
 }
 
-watch(visible, newVal => {
+watch(visible, (newVal) => {
   if (!newVal) {
     formRef.value.resetFields()
   }
@@ -33,7 +34,8 @@ async function handleSave() {
   try {
     await formRef.value.validate()
     emit('save', formState.value)
-  } catch (error) {
+  }
+  catch (error) {
     console.log(error)
   }
 }

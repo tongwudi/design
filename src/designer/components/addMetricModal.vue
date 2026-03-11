@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useDesignerStore } from '@/store'
 import { useAsideHook } from '@/hooks'
 import { createComponent } from '@/packages'
+import { useDesignerStore } from '@/store'
 
 const emit = defineEmits(['add'])
 
@@ -36,7 +36,7 @@ function handleAdd() {
   emit('add', selectedWidget.value)
 }
 
-const handleCancel = () => {
+function handleCancel() {
   visible.value = false
 }
 </script>
@@ -70,8 +70,8 @@ const handleCancel = () => {
       <a-flex>
         <a-select
           v-if="Object.keys(selectedWidget).length > 0"
-          style="width: 100px; text-align: center"
           v-model:value="selectedWidget.w"
+          style="width: 100px; text-align: center"
         >
           <template v-for="i in [6, 4, 3, 2, 1]" :key="i">
             <a-select-option :value="gridConfig.colNum / i">
@@ -80,7 +80,9 @@ const handleCancel = () => {
           </template>
         </a-select>
         <a-flex style="margin-left: auto">
-          <a-button @click="handleCancel">取消</a-button>
+          <a-button @click="handleCancel">
+            取消
+          </a-button>
           <a-button
             type="primary"
             :disabled="Object.keys(selectedWidget).length === 0"

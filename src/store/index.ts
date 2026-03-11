@@ -2,17 +2,26 @@ import { defineStore } from 'pinia'
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
-    layout: [] as WidgetItem[],
     gridConfig: {
       colNum: 24,
       rowHeight: 30,
       margin: [10, 10],
     },
+    layout: [] as WidgetItem[],
     selectedId: '',
   }),
   actions: {
     addWidget(component: WidgetItem) {
       this.layout.unshift(component)
+    },
+    updateWidget(id: string, newWidget: WidgetItem) {
+      const index = this.layout.findIndex(obj => obj.i === id)
+      const obj = this.layout[index]
+      const widget = {
+        ...obj,
+        ...newWidget,
+      }
+      this.layout[index] = widget
     },
     removeWidget(id: string) {
       this.layout = this.layout.filter(obj => obj.i !== id)
@@ -32,10 +41,9 @@ export const useDesignerStore = defineStore('designer', {
     },
     updateSelectedConfig(id: string, newConfig: DefaultConfig) {
       const index = this.layout.findIndex(obj => obj.i === id)
-      if (index === -1) {
-        return
+      if (index !== -1) {
+        this.layout[index]!.config = { ...newConfig }
       }
-      this.layout[index]!.config = { ...newConfig }
     },
     clearAllLayout() {
       this.layout = []

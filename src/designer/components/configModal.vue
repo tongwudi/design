@@ -1,7 +1,7 @@
+<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { CascaderProps } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import { useDesignerStore } from '@/store'
 import dataJson from '../data.json'
 
 const props = defineProps({
@@ -15,14 +15,12 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['submit'])
+
 const visible = defineModel('modelValue', {
   type: Boolean,
   default: false,
 })
-
-const emit = defineEmits(['submit'])
-
-const designerStore = useDesignerStore()
 
 const formConfig = computed(() => props.record)
 
@@ -33,7 +31,6 @@ const metricOptions = processOptions(dataJson)
 watch(visible, (newVal) => {
   if (!newVal) {
     formRef.value.resetFields()
-    designerStore.setSelectedId('')
   }
 })
 
@@ -49,7 +46,8 @@ async function handleSubmit() {
   try {
     await formRef.value.validate()
     emit('submit', formConfig.value)
-  } catch (error) {
+  }
+  catch (error) {
     console.log(error)
   }
 }

@@ -1,6 +1,7 @@
 <!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import type { CascaderProps } from 'ant-design-vue'
+import type { ShowSearchType } from 'ant-design-vue/es/cascader'
 import type { Rule } from 'ant-design-vue/es/form'
 import dataJson from '../data.json'
 
@@ -55,6 +56,10 @@ async function handleSubmit() {
 function handleCancel() {
   visible.value = false
 }
+
+const filter: ShowSearchType['filter'] = (inputValue, path) => {
+  return path.some(option => option.label.toLowerCase()?.indexOf(inputValue.toLowerCase()) > -1)
+}
 </script>
 
 <template>
@@ -73,8 +78,9 @@ function handleCancel() {
         <a-cascader
           v-model:value="formConfig.metrics"
           :options="metricOptions"
-          :max-tag-count="1"
+          :show-search="{ filter }"
           :multiple="formConfig.multiple ?? true"
+          :max-tag-count="1"
           show-checked-strategy="SHOW_CHILD"
         />
       </a-form-item>
@@ -83,6 +89,7 @@ function handleCancel() {
           <a-cascader
             v-model:value="formConfig.lordMetricsId"
             :options="metricOptions"
+            :show-search="{ filter }"
           >
             <template #displayRender="{ labels }">
               {{ labels[labels.length - 1] }}

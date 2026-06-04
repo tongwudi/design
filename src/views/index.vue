@@ -47,29 +47,29 @@ const show = ref(false)
 const formState = ref<Record<string, string>>({})
 const loading = ref(false)
 
-const btns: any = computed(() => [
+const menus: any = computed(() => [
   {
-    title: '编辑',
+    text: '编辑',
     icon: 'EditOutlined',
     show: preview.value,
-    clickFn: () => {
+    handler: () => {
       preview.value = false
       cacheLayout.value = [...layout.value]
     },
   },
   {
-    title: '删除',
+    text: '删除',
     isDanger: true,
     icon: 'DeleteOutlined',
     show: preview.value,
-    clickFn: removePage,
+    handler: removePage,
   },
   {
-    title: '退出编辑',
+    text: '退出编辑',
     icon: 'CloseOutlined',
     isDanger: true,
     show: !!id.value && !preview.value,
-    clickFn: () => {
+    handler: () => {
       Modal.confirm({
         title: '操作提示',
         type: 'warning',
@@ -84,24 +84,24 @@ const btns: any = computed(() => [
     },
   },
   {
-    title: '选择指标卡',
+    text: '选择指标卡',
     icon: 'PlusOutlined',
     show: !preview.value,
-    clickFn: () => {
+    handler: () => {
       showModal.value = true
     },
   },
   {
-    title: '清空',
+    text: '清空',
     icon: 'DeleteOutlined',
     show: !preview.value,
-    clickFn: clearAll,
+    handler: clearAll,
   },
   {
-    title,
+    text: title.value,
     icon: 'SaveOutlined',
     show: !preview.value,
-    clickFn: savePage,
+    handler: savePage,
   },
 ])
 
@@ -245,7 +245,7 @@ function toolbar(action: 'setting' | 'remove', item: WidgetItem) {
   <div class="designer">
     <a-layout style="height: 100%">
       <a-layout-header :style="headerStyle">
-        <HeaderBar :title="menuTitle" :btns="btns" />
+        <HeaderBar :title="menuTitle" :menus="menus" />
       </a-layout-header>
       <a-layout>
         <a-layout-content :style="contentStyle">

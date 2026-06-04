@@ -1,22 +1,25 @@
 <script lang="ts" setup>
 import * as Icons from '@ant-design/icons-vue'
 
+type IconKey = keyof typeof Icons
+interface MenuItem {
+  text: string
+  icon: IconKey
+  isDanger?: boolean
+  show?: boolean
+  handler: () => void
+}
+
 const props = defineProps<{
   title: string
-  btns: {
-    title: string
-    icon: keyof typeof Icons
-    isDanger?: boolean
-    show?: boolean
-    clickFn?: () => void
-  }[]
+  menus: MenuItem[]
 }>()
 
-const getBtns = computed(() => {
-  return props.btns?.map(btn => ({
-    ...btn,
-    show: btn.show ?? true,
-  })) || []
+const getMenus = computed(() => {
+  return props.menus.map(menu => ({
+    ...menu,
+    show: menu.show ?? true,
+  }))
 })
 
 function getIconComponent(iconName: keyof typeof Icons): Component {
@@ -30,12 +33,12 @@ function getIconComponent(iconName: keyof typeof Icons): Component {
       {{ title || '仪表盘设计器' }}
     </div>
     <a-space>
-      <template v-for="(btn, idx) in getBtns" :key="idx">
-        <a-button v-if="btn.show" type="link" :danger="btn.isDanger" @click="btn.clickFn">
+      <template v-for="(btn, idx) in getMenus" :key="idx">
+        <a-button v-if="btn.show" type="link" :danger="btn.isDanger" @click="btn.handler">
           <template #icon>
             <component :is="getIconComponent(btn.icon)" />
           </template>
-          {{ btn.title }}
+          {{ btn.text }}
         </a-button>
       </template>
     </a-space>
